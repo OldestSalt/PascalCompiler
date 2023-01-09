@@ -12,30 +12,23 @@ namespace PascalCompiler.Lexer {
             streamHandler = sh;
             rules = new Dictionary<int, Dictionary<char[], int>>{
                 { 1, new Dictionary<char[], int> {
-                        { new char[] { '<' }, 2 },
-                        { new char[] { '>' }, 3 },
+                        { new char[] { '<', '>' }, 2 },
                         { new char[] { ':' }, 4 },
                         { new char[] { '.' }, 5 },
-                        { new char[] { '+', '-', '*', '^', '/', '=' }, 6 },
+                        { new char[] { '+', '-', '*', '^', '/', '=', '@' }, 6 },
                         { new char[] { ',', ';', '(', ')', '[', ']' } , 7 }
                     }
                 },
                 { 2, new Dictionary<char[], int> {
-                        { new char[] { '>', '=' }, 6 }
-                    }
-                },
-                { 3, new Dictionary<char[], int> {
-                        { new char[] { '=' }, 6 }
+                        { new char[] { '>', '=', '<' }, 6 }
                     }
                 },
                 { 4, new Dictionary<char[], int> {
                         { new char[] { '=' }, 6 }
-                        // Other => state 7
                     }
                 },
                 { 5, new Dictionary<char[], int> {
                         { new char[] { '.' }, 7 }
-                        // Other => state 6
                     }
                 }
             };
@@ -56,7 +49,10 @@ namespace PascalCompiler.Lexer {
                     streamHandler.GetChar();
                 }
                 else {
-                    curState = curState == 4 ? 7 : 6;
+                    curState = curState == 4 || curState == 5 ? 7 : 6;
+                }
+                if (Constants.BadChars.Contains(peekedChar)) {
+                    ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, streamHandler.lineNumber, streamHandler.charNumber + 1);
                 }
             }
 

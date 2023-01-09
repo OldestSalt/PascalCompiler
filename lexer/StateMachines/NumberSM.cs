@@ -15,7 +15,7 @@ namespace PascalCompiler.Lexer {
         }
         public void StringToFloat(string input, out float result) {
             float parsedFloat = Convert.ToSingle(input, CultureInfo.InvariantCulture);
-            if (float.IsInfinity(parsedFloat) || float.IsNaN(parsedFloat)) throw new OverflowException();
+            if (float.IsInfinity(parsedFloat) || float.IsNaN(parsedFloat) || parsedFloat < 1.175495E-38) throw new OverflowException();
             result = parsedFloat;
         }
 
@@ -82,7 +82,7 @@ namespace PascalCompiler.Lexer {
             };
         }
 
-        public Lexeme? GetNextLexeme() { //исправить несрабатывание на маленькие дробные числа
+        public Lexeme? GetNextLexeme(Lexer lexer) { //исправить несрабатывание на маленькие дробные числа
             var newLexeme = new Lexeme();
             var curState = 1;
             int nextState;
@@ -125,7 +125,8 @@ namespace PascalCompiler.Lexer {
                 }
                 else if (curState == 8) {
                     curState = nextState == 0 ? 18 : nextState;
-                    if (nextState >= 8 && nextState <= 10) {
+                    if (nextState == 9 && streamHandler.Peek2() == '.') curState = 20;
+                    else if (nextState >= 8 && nextState <= 10) {
                         rawLexeme.Append(peekedChar);
                         stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
                     }
@@ -165,7 +166,7 @@ namespace PascalCompiler.Lexer {
             else if (curState == 14) {
                 ExceptionHandler.Throw(Exceptions.FloatIncorrectFormat, streamHandler.lineNumber, streamHandler.charNumber + 1);
             }
-            else if (curState >= 15 && curState <= 18) {
+            else if (curState >= 15 && curState <= 18 || curState == 20) {
                 newLexeme.type = Constants.LexemeType.INTEGER;
                 int radix = 10;
                 uint parsedInt;
@@ -186,11 +187,11 @@ namespace PascalCompiler.Lexer {
                     newLexeme.value = parsedInt.ToString();
                 }
                 catch (OverflowException) {
-                    if (Lexer.prevLexeme!.value == "-" && parsedNumberString == "2147483648") {
+                    if (lexer.curLexeme != null && lexer.curLexeme.value == "-" && (parsedNumberString == "2147483648" || parsedNumberString == "20000000000" || parsedNumberString == "10000000000000000000000000000000" || parsedNumberString == "80000000")) {
                         newLexeme.value = "2147483648";
                     }
                     else {
-                        ExceptionHandler.Throw(Exceptions.IntegerOverflow, newLexeme.lineNumber, newLexeme.charNumber + 1);
+                        ExceptionHandler.Throw(Exceptions.IntegerOverflow, streamHandler.lineNumber, streamHandler.charNumber + 1);
                     }
                 }
             }

@@ -33,7 +33,7 @@ namespace PascalCompiler.Lexer {
                 if (nextState == 1) {
                     rawLexeme.Append(peekedChar);
                     if (foundString.Length < Constants.MAX_IDENTIFIER_LENGTH) foundString.Append(Char.ToLower(streamHandler.GetChar()));
-                    else streamHandler.GetChar(); //должна быть ошибка
+                    else ExceptionHandler.Throw(Exceptions.LongIdentifierName, streamHandler.lineNumber, streamHandler.charNumber + 1);
                 }
                 else break;
             }

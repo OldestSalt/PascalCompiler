@@ -16,7 +16,6 @@
     <None Remove="lexer\StateMachines\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="tests\" />
-    <Folder Include="tests\lexer\" />
+    <Folder Include="tests\lexer\output\" />
   </ItemGroup>
 </Project>

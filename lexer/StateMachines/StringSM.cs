@@ -39,7 +39,7 @@ namespace PascalCompiler.Lexer {
             };
         }
 
-        public Lexeme? GetNextLexeme() {
+        public Lexeme? GetNextLexeme(Lexer lexer) {
             var newLexeme = new Lexeme();
             var curState = 1;
             var foundString = new StringBuilder();
@@ -84,7 +84,7 @@ namespace PascalCompiler.Lexer {
                 }
                 else if (curState == 5) {
                     NumberSM numberSM = new NumberSM(streamHandler);
-                    Lexeme? charCodeLexeme = numberSM.GetNextLexeme();
+                    Lexeme? charCodeLexeme = numberSM.GetNextLexeme(lexer);
 
                     if (charCodeLexeme == null || charCodeLexeme.value == null || charCodeLexeme.type != Constants.LexemeType.INTEGER || uint.Parse(charCodeLexeme.value) > Constants.MAX_CHARACTER_NUMBER) {
                         curState = 6;

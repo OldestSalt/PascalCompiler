@@ -50,10 +50,17 @@
             "with",
             "and",
             "or",
+            "xor",
+            "shl",
+            "shr",
             "not",
             "div",
             "mod",
-            "in"
+            "in",
+            "is",
+            "include",
+            "exclude",
+            "uses"
         };
 
         public static readonly char[] Letters = {
@@ -98,33 +105,43 @@
             ">=",
             ">",
             "^",
+            "@",
             ".",
+            "..",
             "and",
             "or",
+            "xor",
+            "shl",
+            "shr",
+            "<<",
+            ">>",
             "not",
             "div",
             "mod",
-            "in"
+            "in",
+            "is",
+            "include",
+            "exclude"
         };
 
-        public static readonly string[] Separators = {
-            ",",
-            ";",
-            ":",
-            "(",
-            ")",
-            "[",
-            "]",
-            ".."
-        };
+        //public static readonly string[] Separators = {
+        //    ",",
+        //    ";",
+        //    ":",
+        //    "(",
+        //    ")",
+        //    "[",
+        //    "]",
+        //    ".."
+        //};
 
-        public static readonly char[] InsignificantChars = {
-            ' ',
-            '\n',
-            '\t',
-            '\r',
-            '\0'
-        };
+        //public static readonly char[] InsignificantChars = {
+        //    ' ',
+        //    '\n',
+        //    '\t',
+        //    '\r',
+        //    '\0'
+        //};
 
         public static readonly char[] ModifierChars = {
             '$',
@@ -205,26 +222,34 @@
             'f'
         };
 
-        public static readonly char[] SpecialChars = {
-            '+',
-            '-',
-            '*',
-            '/',
-            ':',
-            '=',
-            '<',
-            '>',
-            '^',
-            '.',
-            ',',
-            ';',
-            '(',
-            ')',
-            '[',
-            ']'
-        };
+        //public static readonly char[] SpecialChars = {
+        //    '+',
+        //    '-',
+        //    '*',
+        //    '/',
+        //    ':',
+        //    '=',
+        //    '<',
+        //    '>',
+        //    '^',
+        //    '@',
+        //    '.',
+        //    ',',
+        //    ';',
+        //    '(',
+        //    ')',
+        //    '[',
+        //    ']'
+        //};
 
-        public static readonly string ProjectPath =
-            Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName;
+        public static readonly char[] BadChars = {
+            '\\',
+            '|',
+            '"',
+            '}',
+            '!',
+            '?',
+            '№',
+        };
     }
 }

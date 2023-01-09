@@ -2,7 +2,7 @@
   "profiles": {
     "PascalCompiler": {
       "commandName": "Project",
-      "commandLineArgs": "tests\\lexer\\test1.txt -l"
+      "commandLineArgs": "tests/expressions/input.txt -exp"
     }
   }
 }

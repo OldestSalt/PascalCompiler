@@ -1,11 +1,11 @@
 ﻿namespace PascalCompiler.Lexer {
-    public class Lexer {
+    public class Lexer { //починить закрывающую фигурную скобку!
         private readonly StreamHandler streamHandler;
         private readonly IdentifierReservedWordSM identifierReservedWordSM;
         private readonly StringSM stringSM;
         private readonly OperatorSeparatorSM operatorSeparatorSM;
         private readonly NumberSM numberSM;
-        public static Lexeme? prevLexeme = null;
+        public Lexeme? curLexeme = null;
 
         public Lexer(string fileName) {
             streamHandler = new StreamHandler(fileName);
@@ -35,10 +35,10 @@
                     nextLexeme = identifierReservedWordSM.GetNextLexeme();
                 }
                 else if (Char.IsDigit(nextChar) || Constants.ModifierChars.Contains(nextChar)) {
-                    nextLexeme = numberSM.GetNextLexeme();
+                    nextLexeme = numberSM.GetNextLexeme(this);
                 }
                 else if (nextChar == '\'' || nextChar == '#') {
-                    nextLexeme = stringSM.GetNextLexeme();
+                    nextLexeme = stringSM.GetNextLexeme(this);
                 }
                 else {
                     nextLexeme = operatorSeparatorSM.GetNextLexeme();
@@ -52,7 +52,7 @@
             nextLexeme!.lineNumber = lineNumber;
             nextLexeme!.charNumber = charNumber + 1;
 
-            prevLexeme = nextLexeme;
+            curLexeme = nextLexeme;
             
             return nextLexeme;
         }

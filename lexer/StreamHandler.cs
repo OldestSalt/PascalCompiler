@@ -43,7 +43,7 @@ namespace PascalCompiler.Lexer {
         
         public StreamHandler(string fileName) {
             try {
-                streamReader = new StreamReader(Path.Combine(Constants.ProjectPath, fileName));
+                streamReader = new StreamReader(Path.Combine(CommonConstants.ProjectPath, fileName));
             }
             catch (FileNotFoundException) {
                 ExceptionHandler.Throw(Exceptions.FileNotFound);
@@ -87,28 +87,28 @@ namespace PascalCompiler.Lexer {
 
                 if (c == '{') {
                     GetChar();
-                    isCurlyComment = true; // 123 = {
+                    isCurlyComment = true;
                 }
                 else if (c == '(' && cn == '*') {
                     GetChar();
                     GetChar();
-                    isBigramComment = true; // 40 = (, 42 = *
+                    isBigramComment = true;
                 }
                 else if (c == '/' && cn == '/') {
                     GetChar();
                     GetChar();
-                    isLineComment = true; // 47 = /
+                    isLineComment = true;
                 }
 
                 c = Peek();
                 cn = Peek2();
 
                 while (isCurlyComment || isBigramComment || isLineComment) {
-                    if (c == '}' && (isCurlyComment || isBigramComment)) { // 125 = }
+                    if (c == '}' && (isCurlyComment || isBigramComment)) {
                         isCurlyComment = false;
                         isBigramComment = false;
                     }
-                    else if (c == '*' && cn == ')' && (isBigramComment || isCurlyComment)) { // 42 = *, 41 = )
+                    else if (c == '*' && cn == ')' && (isBigramComment || isCurlyComment)) {
                         isBigramComment = false;
                         isCurlyComment = false;
                         GetChar();
@@ -122,9 +122,9 @@ namespace PascalCompiler.Lexer {
                     cn = Peek2();
                 }
 
-                if (c == '{' || c == '(' && cn == '*' || c == '/' && cn == '/') continue; // Dealing with a comment following a comment
+                if (c == '{' || c == '(' && cn == '*' || c == '/' && cn == '/') continue;
 
-                if (Constants.InsignificantChars.Contains((char)c)) GetChar();
+                if (Char.IsWhiteSpace((char)c)) GetChar();
                 else break;
             }
         }

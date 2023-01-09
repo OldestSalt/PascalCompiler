@@ -1,0 +1,29 @@
+if
+while
+if (conditionidentifier) then
+else
+begin;
+end.
+for i := 0 to n do
+procedure function
+var brbrbeng: integer
+var mlem: array of [1..200]
+program
+repeat aaAaAAaaAAaaaAaAaaaAaaAAAaaaaaAa until death
+someidentifier
+wow is this identifiers
+THENitsIdentifiersTooThoughItsstartingWithReservedWord
+ifthenwhiledoforuntil
+repeatuntil
+{random comment}
+(* it's working too! }
+//one line comment
+(* u wont see it *)
+//////////so many comments
+(********* S T A R S *******)
+another1109identifier942
+JustAnUsualIdentifierButPascalDoesntMakeDifferenceBetweenUpperCaseAndLowercase
+111identifierCantStartWithDigitSoThatNumberIsInteger
+MaximumOfIdentifiersNameIs127Characters0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 //this name is legal - 127 characters
+VeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyLooooooooooooooooooooooooooooooooooooooooooooooooooooooooongIdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeentiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifiiiiiiiiiiier
+//this line wont be reached, compiler will throw exception on the previous line

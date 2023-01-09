@@ -1,0 +1,13 @@
+'string'
+'Another String'
+''
+#63
+'escaping: '#63#64#65' string'
+#65'oooaaaaa'
+'eeeaaaDDD'#70
+'mlem'#90#63'mlim'#23'mlom'
+'there''s whitespace ->' #99 '<- there''s too'
+'incorrect format'#'error'
+
+
+

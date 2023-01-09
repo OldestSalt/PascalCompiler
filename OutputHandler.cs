@@ -6,14 +6,22 @@ using System.Threading.Tasks;
 
 namespace PascalCompiler {
     public static class OutputHandler {
-        public static void WriteLexemes(List<Lexer.Lexeme?> lexemes) {
-            foreach (var lexeme in lexemes) {
-                Console.WriteLine($"{lexeme!.lineNumber, 3}, {lexeme!.charNumber, 2}:\t{lexeme!.type, 10}\t{lexeme!.value, 20}\t{lexeme!.raw, 20}");
-            }
-        }
 
         public static void WriteLexeme(Lexer.Lexeme? lexeme) {
-            Console.WriteLine($"{lexeme!.lineNumber, 3}, {lexeme!.charNumber, 2}:\t{lexeme!.type, 10}\t{lexeme!.value, 20}\t{lexeme!.raw, 20}");
+            var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Out;
+            outputStream.WriteLine($"{lexeme!.lineNumber}, {lexeme!.charNumber}:\t{lexeme!.type}\t{lexeme!.value}\t{lexeme!.raw}");
+        }
+        public static void WriteAST(Parser.Node ast, string indents = "") {
+            var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Out;
+            outputStream.WriteLine(ast.value);
+            if (ast is Parser.BinaryOperation) {
+                Parser.BinaryOperation node = (Parser.BinaryOperation)ast;
+                outputStream.Write(indents + "├─── ");
+                WriteAST(node.left, indents + "│    ");
+
+                outputStream.Write(indents + "└─── ");
+                WriteAST(node.right, indents + "     ");
+            }
         }
     }
 }

@@ -14,7 +14,11 @@ namespace PascalCompiler {
         FloatIncorrectFormat,
         IntegerOverflow,
         FloatOverflow,
-        IncorrectStringFormat
+        IncorrectStringFormat,
+        UnexpectedCharacter,
+        LongIdentifierName,
+        TestError,
+        ExpectedCharacters,
     }
 
     public static class ExceptionHandler {
@@ -28,17 +32,31 @@ namespace PascalCompiler {
             { Exceptions.IntegerOverflow, "Integer overflow" },
             { Exceptions.FloatOverflow, "Float overflow" },
             { Exceptions.IncorrectStringFormat, "String has an incorrect format" },
-
+            { Exceptions.UnexpectedCharacter, "Unexpected character" },
+            { Exceptions.LongIdentifierName, "Identifier's name is too long" },
+            { Exceptions.TestError, "Test error detected, check output files" },
+            { Exceptions.ExpectedCharacters, "Expected" }
         };
 
-        public static void Throw(Exceptions ex, uint line = 0, uint ch = 0) {
-            if (line != 0 && ch != 0) {
-                Console.Error.WriteLine($"Error detected on position {line}, {ch}: {ExceptionMessages[ex]}.");
+        public static void Throw(Exceptions ex, uint line = 0, uint ch = 0, string expectedChars = "") {
+            var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Error;
+
+            if (expectedChars != "") {
+                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]} {expectedChars}.");
+            }
+            else if (line != 0 && ch != 0) {
+                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]}.");
             }
             else {
-                Console.Error.WriteLine($"Error detected: {ExceptionMessages[ex]}");
+                outputStream.WriteLine($"Error detected: {ExceptionMessages[ex]}");
             }
-            Environment.Exit(1);
+
+            if (PascalCompiler.outputStream != null) {
+                throw new Exception();
+            }
+            else {
+                Environment.Exit(1);
+            }
         }
     }
 }
