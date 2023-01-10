@@ -40,8 +40,11 @@
                 else if (nextChar == '\'' || nextChar == '#') {
                     nextLexeme = stringSM.GetNextLexeme(this);
                 }
-                else {
+                else if (Constants.SpecialChars.Contains(nextChar)) {
                     nextLexeme = operatorSeparatorSM.GetNextLexeme();
+                }
+                else {
+                    ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, lineNumber, charNumber + 1, nextChar.ToString());
                 }
             }
             else {

@@ -7,7 +7,7 @@
         public static readonly uint MAX_CHARACTER_NUMBER = 1114111;
         
         public enum LexemeType {
-            UNKNOWN, // Useful for debug
+            UNKNOWN,
             RESERVED,
             IDENTIFIER,
             STRING,
@@ -124,25 +124,6 @@
             "exclude"
         };
 
-        //public static readonly string[] Separators = {
-        //    ",",
-        //    ";",
-        //    ":",
-        //    "(",
-        //    ")",
-        //    "[",
-        //    "]",
-        //    ".."
-        //};
-
-        //public static readonly char[] InsignificantChars = {
-        //    ' ',
-        //    '\n',
-        //    '\t',
-        //    '\r',
-        //    '\0'
-        //};
-
         public static readonly char[] ModifierChars = {
             '$',
             '&',
@@ -222,25 +203,25 @@
             'f'
         };
 
-        //public static readonly char[] SpecialChars = {
-        //    '+',
-        //    '-',
-        //    '*',
-        //    '/',
-        //    ':',
-        //    '=',
-        //    '<',
-        //    '>',
-        //    '^',
-        //    '@',
-        //    '.',
-        //    ',',
-        //    ';',
-        //    '(',
-        //    ')',
-        //    '[',
-        //    ']'
-        //};
+        public static readonly char[] SpecialChars = {
+            '+',
+            '-',
+            '*',
+            '/',
+            ':',
+            '=',
+            '<',
+            '>',
+            '^',
+            '@',
+            '.',
+            ',',
+            ';',
+            '(',
+            ')',
+            '[',
+            ']'
+        };
 
         public static readonly char[] BadChars = {
             '\\',

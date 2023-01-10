@@ -82,7 +82,7 @@ namespace PascalCompiler.Lexer {
             };
         }
 
-        public Lexeme? GetNextLexeme(Lexer lexer) { //исправить несрабатывание на маленькие дробные числа
+        public Lexeme? GetNextLexeme(Lexer lexer) {
             var newLexeme = new Lexeme();
             var curState = 1;
             int nextState;
