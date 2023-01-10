@@ -31,9 +31,17 @@ namespace PascalCompiler {
 						break;
                 }
 			}
-			else if (args.Length == 1 && args[0] == "-lt") {
-				TestSystem.LexerTests();
+			else if (args.Length == 1) {
+				switch (args[0]) {
+					case "-lt":
+						TestSystem.LexerTests();
+						break;
+					case "-expt":
+						TestSystem.ExpressionsParserTest();
+						break;
+				}
 			}
+
 			else {
 				ExceptionHandler.Throw(Exceptions.WithoutKeys);
 			}

@@ -12,7 +12,7 @@ namespace PascalCompiler.Parser {
             lexer.GetNextLexeme();
         }
 
-        public Node ParseExpression() {
+        public Node ParseExpression(bool isBracket = false) {
             Node n = ParseTerm();
             Lexer.Lexeme? lexeme = lexer.curLexeme;
 
@@ -21,6 +21,11 @@ namespace PascalCompiler.Parser {
                 n = new BinaryOperation(n, ParseTerm(), lexeme.value);
                 lexeme = lexer.curLexeme;
             }
+
+            if (lexeme!.value == ")" && !isBracket) {
+                ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, lexeme.value);
+            }
+
             return n;
         }
 
@@ -48,7 +53,7 @@ namespace PascalCompiler.Parser {
             }
             else if (lexeme.value == "(") {
                 lexer.GetNextLexeme();
-                Node n = ParseExpression();
+                Node n = ParseExpression(true);
 
                 if (lexer.curLexeme!.value != ")") {
                     ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme.lineNumber, lexer.curLexeme.charNumber, ")");
@@ -57,11 +62,11 @@ namespace PascalCompiler.Parser {
                 lexer.GetNextLexeme();
                 return n;
             }
-            else {
-                ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, lexeme.value);
-            }
+            //else {
+            //    ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, lexeme.value);
+            //}
 
-            ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "factor");
+            ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "operand");
             return null;
         }
     }
