@@ -51,13 +51,20 @@ namespace PascalCompiler {
         public static void ExpressionsParserTest() {
             foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/expressions/input").GetFiles()) {
                 PascalCompiler.outputStream = new StreamWriter($"{CommonConstants.ProjectPath}/tests/expressions/output.txt");
-                Parser.ExpressionParser parser = new Parser.ExpressionParser(new Lexer.Lexer(file.FullName));
+                Lexer.Lexer lexer = new Lexer.Lexer(file.FullName);
+                Expressions.ExpressionParser parser = new Expressions.ExpressionParser(lexer);
+
                 try {
                     OutputHandler.WriteAST(parser.ParseExpression());
+                    if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.EOF) {
+                        ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber);
+                    }
                 }
                 catch {
 
                 }
+
+                
 
                 List<string>? correctASTlines = null;
                 PascalCompiler.outputStream.Close();

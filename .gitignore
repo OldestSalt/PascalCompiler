@@ -4,3 +4,4 @@ obj
 .DS_Store
 .idea
 tests/lexer/output.txt
+tests/expressions/output.txt

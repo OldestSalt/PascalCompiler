@@ -19,6 +19,7 @@ namespace PascalCompiler {
         LongIdentifierName,
         TestError,
         ExpectedCharacters,
+        UnknownError
     }
 
     public static class ExceptionHandler {
@@ -35,7 +36,8 @@ namespace PascalCompiler {
             { Exceptions.UnexpectedCharacter, "Unexpected character" },
             { Exceptions.LongIdentifierName, "Identifier's name is too long" },
             { Exceptions.TestError, "Test error detected, check output files" },
-            { Exceptions.ExpectedCharacters, "Expected" }
+            { Exceptions.ExpectedCharacters, "Expected" },
+            { Exceptions.UnknownError, "Unknown error" }
         };
 
         public static void Throw(Exceptions ex, uint line = 0, uint ch = 0, string expectedChars = "") {

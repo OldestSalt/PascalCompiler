@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PascalCompiler.Parser {
+namespace PascalCompiler.Expressions {
     public class ExpressionParser {
         private Lexer.Lexer lexer;
         public ExpressionParser(Lexer.Lexer lexer) {

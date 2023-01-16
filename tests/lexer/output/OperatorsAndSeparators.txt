@@ -4,7 +4,8 @@
 2, 1:	SEPARATOR	:	:
 3, 1:	OPERATOR	:=	:=
 4, 1:	OPERATOR	<>	<>
-4, 3:	OPERATOR	>>	>>
+4, 3:	OPERATOR	>	>
+4, 4:	OPERATOR	>	>
 4, 5:	OPERATOR	<>	<>
 4, 7:	OPERATOR	:=	:=
 5, 1:	OPERATOR	mod	mod
@@ -23,11 +24,11 @@
 9, 3:	SEPARATOR	(	(
 10, 1:	SEPARATOR	..	..
 11, 1:	IDENTIFIER	aaa	aaa
-11, 5:	OPERATOR	shr	shr
+11, 5:	OPERATOR	and	and
 11, 9:	INTEGER	19	19
 12, 1:	IDENTIFIER	bbb	bbb
-12, 5:	OPERATOR	shl	shl
-12, 9:	INTEGER	4	4
+12, 5:	OPERATOR	or	or
+12, 8:	INTEGER	4	4
 13, 1:	IDENTIFIER	a	a
 13, 3:	OPERATOR	:=	:=
 13, 6:	IDENTIFIER	b	b
@@ -88,16 +89,13 @@
 20, 19:	OPERATOR	+	+
 20, 21:	INTEGER	12	12
 21, 1:	IDENTIFIER	steptotheleft	steptotheleft
-21, 15:	OPERATOR	<<	<<
+21, 15:	OPERATOR	<	<
+21, 16:	OPERATOR	<	<
 21, 18:	INTEGER	1	1
 21, 19:	SEPARATOR	;	;
 22, 1:	IDENTIFIER	steptotheright	steptotheright
-22, 16:	OPERATOR	>>	>>
+22, 16:	OPERATOR	>	>
+22, 17:	OPERATOR	>	>
 22, 19:	INTEGER	1	1
 22, 20:	SEPARATOR	;	;
-23, 1:	OPERATOR	@	@
-23, 2:	IDENTIFIER	aaa	aaa
-23, 5:	SEPARATOR	:	:
-23, 7:	OPERATOR	^	^
-23, 8:	IDENTIFIER	eee	eee
-23, 11:	EOF		
+22, 21:	EOF		

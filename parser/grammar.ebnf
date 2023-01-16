@@ -1,0 +1,54 @@
+<program> ::= {<optional_block>} <block> "." <EOF>
+<optional_block> ::= [<program_name>] <constants> | <variables> | <types> | <procedures> | <functions>
+<program_name> ::= "program" <identifier> ";"
+
+<constants> ::= "const" <new_constant> {<new_constant>}
+<new_constant> ::= <identifier> [":" <datatype>] "=" <expression> ";"
+
+<variables> ::= "var" <new_variable> {<new_variable>}
+<new_variable> ::= <identifier> ":" <datatype> ["=" <expression>] ";"
+
+<types> ::= "type" <new_type> {<new_type>}
+<new_type> ::= <identifier> "=" <datatype> ";"
+
+<procedures> ::= <new_procedure> {<new_procedure>}
+<new_procedure> ::= "procedure" <identifier> <args> ";" <subroutine_body> ";"
+
+<functions> ::= <new_function> {<new_function>}
+<new_function> ::= "function" <identifier> <args> ":" <base_datatype> ";" <subroutine_body> ";"
+
+<subroutine_body> ::= {<constants | <variables> | <types>} <block>
+<args> ::= "(" [<new_arg> {";" <new_arg>}] ")"
+<new_arg> ::= ["var" | "const" | "out"] <identifier> {"," <identifier>} ":" (<base_datatype> | <array_arg_datatype>)
+<array_arg_datatype> ::= "array" "of" <base_datatype>
+
+<block> ::= "begin" [<statement> {";" <statement>}] "end"
+<statement> ::= <assignment_statement> | <subroutine_call> | <if_statement> | <while_statement> | <repeat_statement> | <for_statement> | <block>
+# <empty_statement> ::= "begin" "end"
+<assignment_statement> ::= (<identifier> | <array_access> | <record_access>) ":=" <expression>
+<subroutine_call> ::= <identifier> ["(" <expression> {"," <expression>} ")"]
+<if_statement> ::= "if" <expression> "then" <statement> ["else" <statement>]
+<while_statement> ::= "while" <expression> "do" <statement>
+<repeat_statement> ::= "repeat" [<statement> {";" <statement>}] "until" <expression>
+<for_statement> ::= "for" <identifier> ":=" <expression> ("to" | "downto") <expression> "do" <statement>
+
+<expression> ::= <simple_expression> [<compare_operator> <simple_expression>]
+<simple_expression> ::= <term> [<add_operator> <simple_expression>]
+<term> ::= <factor> [<multiply_operator> <term>]
+<factor> ::= {unary_operator} (("(" <expression> ")") | <constant> | <reference>)
+<reference> ::= <identifier> | <array_access> | <record_access> | <function_call>
+<array_access> ::= <reference> "[" <expression> {"," <expression>} "]"
+<record_access> ::= <reference> "." <identifier>
+<function_call> ::= <identifier> ["(" <expression> {"," <expression>} ")"]
+
+<datatype> ::= <base_datatype> | <array_datatype> | <record_datatype>
+<base_datatype> ::= <identifier>
+<array_datatype> ::= "array" "[" <indexes> {"," <indexes>} "]" "of" <datatype>
+<indexes> ::= <decimal_integer> ".." <decimal_integer>
+<record_datatype> ::= "record" [<new_field> {";" <new_field>}] "end"
+<new_field> ::= <identifier> {"," <identifier>} ":" <datatype>
+
+<compare_operator> ::= ">" | "<" | "=" | "<>" | ">=" | "<="
+<add_operator> ::= "+" | "-" | "or" | "xor"
+<multiply_operator> ::= "*" | "/" | "div" | "mod" | "and"
+<unary_operator> ::= "+" | "-" | "not"

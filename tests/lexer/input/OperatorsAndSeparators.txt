@@ -8,8 +8,8 @@ mod not div;
 :)
 >:(
 ..
-aAa shr 19
-BbB shl 4
+aAa and 19
+BbB or 4
 a := b
 mlem xor or and mlim;
 brbrbeng in [13..192];
@@ -20,4 +20,3 @@ cake is lie
 (3 * (a - c)) / b + 12
 stepToTheLeft << 1;
 stepToTheRight >> 1;
-@aaa: ^eee

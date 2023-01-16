@@ -22,8 +22,8 @@ namespace PascalCompiler {
 						break;
 					case "-exp":
 						lexer = new Lexer.Lexer(fileName);
-						Parser.ExpressionParser parser = new Parser.ExpressionParser(lexer);
-						Parser.Node tree = parser.ParseExpression();
+						Expressions.ExpressionParser parser = new Expressions.ExpressionParser(lexer);
+						Expressions.Node tree = parser.ParseExpression();
 						OutputHandler.WriteAST(tree);
 						break;
 					default:

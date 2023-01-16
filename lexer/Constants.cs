@@ -51,16 +51,10 @@
             "and",
             "or",
             "xor",
-            "shl",
-            "shr",
             "not",
             "div",
             "mod",
-            "in",
-            "is",
-            "include",
-            "exclude",
-            "uses"
+            "in"
         };
 
         public static readonly char[] Letters = {
@@ -104,24 +98,15 @@
             "<=",
             ">=",
             ">",
-            "^",
-            "@",
-            ".",
             "..",
             "and",
             "or",
             "xor",
-            "shl",
-            "shr",
-            "<<",
-            ">>",
             "not",
             "div",
             "mod",
             "in",
-            "is",
-            "include",
-            "exclude"
+            "is"
         };
 
         public static readonly char[] ModifierChars = {
@@ -212,8 +197,6 @@
             '=',
             '<',
             '>',
-            '^',
-            '@',
             '.',
             ',',
             ';',
@@ -221,16 +204,6 @@
             ')',
             '[',
             ']'
-        };
-
-        public static readonly char[] BadChars = {
-            '\\',
-            '|',
-            '"',
-            '}',
-            '!',
-            '?',
-            '№',
         };
     }
 }
