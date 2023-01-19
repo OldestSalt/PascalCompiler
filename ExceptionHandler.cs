@@ -44,10 +44,10 @@ namespace PascalCompiler {
             var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Error;
 
             if (expectedChars != "") {
-                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]} {expectedChars}.");
+                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]} {expectedChars}");
             }
             else if (line != 0 && ch != 0) {
-                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]}.");
+                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]}");
             }
             else {
                 outputStream.WriteLine($"Error detected: {ExceptionMessages[ex]}");

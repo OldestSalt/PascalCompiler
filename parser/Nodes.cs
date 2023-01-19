@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 namespace PascalCompiler.Parser.Nodes {
     public abstract class Node {
         public Lexer.Lexeme? lexeme;
-        public Node? parent = null;
         protected Node(Lexer.Lexeme? lexeme = null) {
             this.lexeme = lexeme;
         }
+
+        public abstract void Accept(Visitor visitor);
     }
 
     public class Program : Node {
@@ -18,8 +19,11 @@ namespace PascalCompiler.Parser.Nodes {
             this.mainBlock = mainBlock;
             optionalBlock = optBlock;
         }
-        OptionalBlock? optionalBlock;
-        Block mainBlock;
+        public override void Accept(Visitor visitor) {
+            visitor.VisitProgram(this);
+        }
+        public OptionalBlock? optionalBlock;
+        public Block mainBlock;
     }
 
     public class OptionalBlock : Node {
@@ -29,6 +33,9 @@ namespace PascalCompiler.Parser.Nodes {
             programName = progName;
             declarations = decls;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitOptionalBlock(this);
+        }
     }
 
     public class Block : Statement {
@@ -36,12 +43,18 @@ namespace PascalCompiler.Parser.Nodes {
         public Block(List<Statement>? statements) {
             this.statements = statements;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitBlock(this);
+        }
     }
 
     public class ProgramName: Node {
-        public Node name;
-        public ProgramName(Node name) {
+        public Identifier name;
+        public ProgramName(Identifier name) {
             this.name = name;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitProgramName(this);
         }
     }
 
@@ -54,6 +67,9 @@ namespace PascalCompiler.Parser.Nodes {
         public Constants(List<NewConstant> constants) {
             this.constants = constants;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitConstants(this);
+        }
     }
 
     public class NewConstant : NewDeclaration {
@@ -65,12 +81,18 @@ namespace PascalCompiler.Parser.Nodes {
             this.type = type;
             this.value = value;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitNewConstant(this);
+        }
     }
 
     public class Variables : DeclarationSection {
         public List<NewVariable> variables;
         public Variables(List<NewVariable> variables) {
             this.variables = variables;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitVariables(this);
         }
     }
 
@@ -83,12 +105,18 @@ namespace PascalCompiler.Parser.Nodes {
             this.type = type;
             this.value = value;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitNewVariable(this);
+        }
     }
 
     public class Types : DeclarationSection {
         public List<NewType> types;
         public Types(List<NewType> types) {
             this.types = types;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitTypes(this);
         }
     }
 
@@ -99,12 +127,18 @@ namespace PascalCompiler.Parser.Nodes {
             this.name = name;
             this.type = type;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitNewType(this);
+        }
     }
 
     public class Procedures: DeclarationSection {
         public List<NewProcedure> procedures;
         public Procedures(List<NewProcedure> procedures) {
             this.procedures = procedures;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitProcedures(this);
         }
     }
 
@@ -117,12 +151,18 @@ namespace PascalCompiler.Parser.Nodes {
             this.args = args;
             this.body = body;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitNewProcedure(this);
+        }
     }
 
     public class Functions: DeclarationSection {
         public List<NewFunction> functions;
         public Functions(List<NewFunction> functions) {
             this.functions = functions;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitFunctions(this);
         }
     }
 
@@ -137,6 +177,9 @@ namespace PascalCompiler.Parser.Nodes {
             this.returnType = returnType;
             this.body = body;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitNewFunction(this);
+        }
     }
 
     public class SubroutineBody : Node {
@@ -146,6 +189,9 @@ namespace PascalCompiler.Parser.Nodes {
             this.decls = decls;
             this.body = body;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitSubroutineBody(this);
+        }
     }
 
     public class SubroutineArgs : Node {
@@ -153,16 +199,22 @@ namespace PascalCompiler.Parser.Nodes {
         public SubroutineArgs(List<NewSubroutineArg>? args) {
             this.args = args;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitSubroutineArgs(this);
+        }
     }
 
     public class NewSubroutineArg : Node {
         public ArgModifier? modifier;
         public List<Identifier> names;
         public Node type;
-        public NewSubroutineArg(ArgModifier modifier, List<Identifier> names, Node type) {
+        public NewSubroutineArg(ArgModifier? modifier, List<Identifier> names, Node type) {
             this.modifier = modifier;
             this.names = names;
             this.type = type;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitNewSubroutineArg(this);
         }
     }
 
@@ -171,6 +223,9 @@ namespace PascalCompiler.Parser.Nodes {
         public ArgModifier(string value) {
             this.value = value;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitArgModifier(this);
+        }
     }
 
     public class ArraySubroutineArg : Node {
@@ -178,20 +233,29 @@ namespace PascalCompiler.Parser.Nodes {
         public ArraySubroutineArg(BaseDatatype type) {
             this.type = type;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitArraySubroutineArg(this);
+        }
     }
 
     public abstract class Statement : Node { }
 
     public class EmptyStatement : Statement {
         public EmptyStatement() { }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitEmptyStatement(this);
+        }
     }
 
     public class AssignmentStatement : Statement {
-        public Expression leftPart;
+        public Node leftPart;
         public Expression rightPart;
-        public AssignmentStatement(Expression leftPart, Expression rightPart) {
+        public AssignmentStatement(Node leftPart, Expression rightPart) {
             this.leftPart = leftPart;
             this.rightPart = rightPart;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitAssignmentStatement(this);
         }
     }
 
@@ -204,6 +268,9 @@ namespace PascalCompiler.Parser.Nodes {
             this.trueStatement = trueStatement;
             this.falseStatement = falseStatement;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitIfStatement(this);
+        }
     }
 
     public class WhileStatement : Statement {
@@ -213,6 +280,9 @@ namespace PascalCompiler.Parser.Nodes {
             this.condition = condition;
             this.body = body;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitWhileStatement(this);
+        }
     }
 
     public class RepeatStatement : Statement {
@@ -221,6 +291,9 @@ namespace PascalCompiler.Parser.Nodes {
         public RepeatStatement(Expression condition, List<Statement>? body) {
             this.condition = condition;
             this.body = body;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitRepeatStatement(this);
         }
     }
 
@@ -235,6 +308,9 @@ namespace PascalCompiler.Parser.Nodes {
             this.end = end;
             this.body = body;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitForStatement(this);
+        }
     }
 
     public class SubroutineCall : Statement {
@@ -243,6 +319,9 @@ namespace PascalCompiler.Parser.Nodes {
         public SubroutineCall(Identifier name, List<Expression>? args) {
             this.name = name;
             this.args = args;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitSubroutineCall(this);
         }
     }
 
@@ -255,67 +334,84 @@ namespace PascalCompiler.Parser.Nodes {
             this.rightComparingOperand = rightComparingOperand;
             this.compareOperator = compareOperator;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitExpression(this);
+        }
     }
 
     public class SimpleExpression : Node {
-        public Term left;
-        public SimpleExpression? right;
+        public SimpleExpression? left;
+        public Term right;
         public AddOperator? addOperator;
-        public SimpleExpression(Term left, AddOperator addOperator, SimpleExpression? right) {
+        public SimpleExpression(SimpleExpression? left, AddOperator? addOperator, Term right) {
             this.left = left;
             this.addOperator = addOperator;
             this.right = right;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitSimpleExpression(this);
+        }
     }
 
     public class Term : Node {
-        public Factor left;
+        public Term? left;
         public MultiplyOperator? multiplyOperator;
-        public Term? right;
-        public Term(Factor left, MultiplyOperator multiplyOperator, Term right) {
+        public SimpleTerm right;
+        public Term(Term? left, MultiplyOperator? multiplyOperator, SimpleTerm right) {
             this.left = left;
             this.multiplyOperator = multiplyOperator;
             this.right = right;
         }
-    }
-
-    public class Factor : Node {
-        public List<UnaryOperator>? unaryOperators;
-        public Node value;
-        public Factor(List<UnaryOperator>? unaryOperators, Node value) {
-            this.unaryOperators = unaryOperators;
-            this.value = value;
+        public override void Accept(Visitor visitor) {
+            visitor.VisitTerm(this);
         }
     }
 
-    public abstract class Reference: Node {
-        public Reference(Lexer.Lexeme lexeme) : base(lexeme) { }
+    public class SimpleTerm : Node {
+        public List<UnaryOperator>? unaryOperators;
+        public Factor factor;
+        public SimpleTerm(List<UnaryOperator>? unaryOperators, Factor factor) {
+            this.unaryOperators = unaryOperators;
+            this.factor = factor;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitSimpleTerm(this);
+        }
     }
 
+    public class Factor : Node {
+        public Node value;
+        public Factor(Node value) {
+            this.value = value;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitFactor(this);
+        }
+    }
+
+    public abstract class Reference: Node { }
+
     public class ArrayAccess: Reference {
-        public Reference name;
+        public Node name;
         public List<Expression> indexes;
-        public ArrayAccess(Reference name, List<Expression> indexes, Lexer.Lexeme lexeme) : base(lexeme) {
+        public ArrayAccess(Node name, List<Expression> indexes) {
             this.name = name;
             this.indexes = indexes;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitArrayAccess(this);
         }
     }
 
     public class RecordAccess : Reference {
-        public Reference name;
+        public Node name;
         public Identifier field;
-        public RecordAccess(Reference name, Identifier field, Lexer.Lexeme lexeme) : base(lexeme) {
+        public RecordAccess(Node name, Identifier field) {
             this.name = name;
             this.field = field;
         }
-    }
-
-    public class FunctionCall : Reference {
-        public Identifier name;
-        public List<Expression> args;
-        public FunctionCall(Identifier name, List<Expression> args, Lexer.Lexeme lexeme) : base(lexeme) {
-            this.name = name;
-            this.args = args;
+        public override void Accept(Visitor visitor) {
+            visitor.VisitRecordAccess(this);
         }
     }
 
@@ -326,6 +422,9 @@ namespace PascalCompiler.Parser.Nodes {
         public BaseDatatype(Identifier name) {
             this.name = name;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitBaseDatatype(this);
+        }
     }
 
     public class ArrayDatatype : Datatype {
@@ -334,6 +433,9 @@ namespace PascalCompiler.Parser.Nodes {
         public ArrayDatatype(Datatype type, List<Index> sizes) {
             this.type = type;
             this.sizes = sizes;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitArrayDatatype(this);
         }
     }
 
@@ -344,12 +446,18 @@ namespace PascalCompiler.Parser.Nodes {
             this.start = start;
             this.end = end;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitIndex(this);
+        }
     }
 
     public class RecordDatatype : Datatype {
         public List<NewField> fields;
         public RecordDatatype(List<NewField> fields) {
             this.fields = fields;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitRecordDatatype(this);
         }
     }
 
@@ -360,6 +468,9 @@ namespace PascalCompiler.Parser.Nodes {
             this.names = names;
             this.type = type;
         }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitNewField(this);
+        }
     }
 
     public abstract class Operator : Node {
@@ -368,25 +479,45 @@ namespace PascalCompiler.Parser.Nodes {
 
     public class CompareOperator : Operator {
         public CompareOperator(Lexer.Lexeme value) : base(value) { }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitCompareOperator(this);
+        }
     }
 
     public class AddOperator : Operator {
         public AddOperator(Lexer.Lexeme value) : base(value) { }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitAddOperator(this);
+        }
     }
 
     public class MultiplyOperator : Operator {
         public MultiplyOperator(Lexer.Lexeme value) : base(value) { }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitMultiplyOperator(this);
+        }
     }
 
     public class UnaryOperator : Operator {
         public UnaryOperator(Lexer.Lexeme value) : base(value) { }
+        public override void Accept(Visitor visitor) { }
     }
 
     public class Identifier : Reference {
-        public Identifier(Lexer.Lexeme lexeme) : base(lexeme) { }
+        public Identifier(Lexer.Lexeme lexeme) {
+            this.lexeme = lexeme;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitIdentifier(this);
+        }
     }
 
-    public class Constant : Reference {
-        public Constant(Lexer.Lexeme lexeme) : base(lexeme) { }
+    public class Constant : Node {
+        public Constant(Lexer.Lexeme lexeme) {
+            this.lexeme = lexeme;
+        }
+        public override void Accept(Visitor visitor) {
+            visitor.VisitConstant(this);
+        }
     }
 }

@@ -1,0 +1,12 @@
+var arr: array [1..2, 1..100, 1..200] of string;
+a: record field1, field2: integer; field3: real end;
+function do_stuff(): record field1, field2, field3: string end;
+begin
+do_stuff.field2 := 'oo'
+end;
+begin
+a.field1 := 200;
+arr[2, 23, 173] := a.field2;
+do_stuff().field3 := 'ii';
+do_stuff.field1 := ''
+end.

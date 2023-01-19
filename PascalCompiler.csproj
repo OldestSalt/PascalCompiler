@@ -17,5 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="tests\lexer\output\" />
+    <Folder Include="tests\parser\" />
   </ItemGroup>
 </Project>

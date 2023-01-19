@@ -1,0 +1,17 @@
+program Maximum;
+var max: integer;
+i: integer;
+ch: integer;
+n: integer;
+begin
+write('Введите количество чисел: ');
+readln(n);
+i:=1;
+for i:=1 to n do
+begin
+     write('Введите ',i,'-е число: ');
+     readln(ch);
+     if max<ch then max:=ch;
+end;
+writeln('Самое большое число: ', max);
+end.

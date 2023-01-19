@@ -5,3 +5,4 @@ obj
 .idea
 tests/lexer/output.txt
 tests/expressions/output.txt
+tests/parser/output.txt

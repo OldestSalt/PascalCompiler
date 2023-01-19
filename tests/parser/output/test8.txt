@@ -1,0 +1,18 @@
+program
+└─── block
+     └─── while
+          ├─── >=
+          │    ├─── -
+          │    │    ├─── +
+          │    │    │    ├─── c
+          │    │    │    └─── 10
+          │    │    └─── *
+          │    │         ├─── 21
+          │    │         └─── subroutine call
+          │    │              ├─── mlem
+          │    │              ├─── c
+          │    │              ├─── a
+          │    │              └─── b
+          │    └─── subroutine call
+          │         └─── mlim
+          └─── block

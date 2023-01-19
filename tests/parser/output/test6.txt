@@ -1,0 +1,22 @@
+program
+├─── optional block
+│    ├─── var
+│    │    ├─── variable declaration
+│    │    │    ├─── i
+│    │    │    └─── datatype: integer
+│    │    └─── variable declaration
+│    │         ├─── j
+│    │         └─── datatype: real
+│    ├─── const
+│    │    └─── const declaration
+│    │         ├─── c
+│    │         ├─── datatype: string
+│    │         └─── valid
+│    └─── type
+│         ├─── type declaration
+│         │    ├─── a
+│         │    └─── datatype: b
+│         └─── type declaration
+│              ├─── b
+│              └─── datatype: a
+└─── block

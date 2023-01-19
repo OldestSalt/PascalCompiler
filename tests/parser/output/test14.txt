@@ -1,0 +1,80 @@
+program
+├─── optional block
+│    ├─── program name: guessthenumber
+│    └─── var
+│         ├─── variable declaration
+│         │    ├─── p
+│         │    └─── datatype: integer
+│         ├─── variable declaration
+│         │    ├─── n
+│         │    └─── datatype: integer
+│         └─── variable declaration
+│              ├─── n1
+│              └─── datatype: integer
+└─── block
+     ├─── :=
+     │    ├─── p
+     │    └─── 0
+     ├─── subroutine call
+     │    ├─── writeln
+     │    └─── Угадайте число от 0 до 10 за 5 попыток!
+     ├─── :=
+     │    ├─── n
+     │    └─── subroutine call
+     │         ├─── random
+     │         └─── 11
+     ├─── repeat
+     │    ├─── or
+     │    │    ├─── =
+     │    │    │    ├─── p
+     │    │    │    └─── 5
+     │    │    └─── =
+     │    │         ├─── n
+     │    │         └─── n1
+     │    ├─── subroutine call
+     │    │    ├─── write
+     │    │    └─── Введите число: 
+     │    ├─── subroutine call
+     │    │    ├─── readln
+     │    │    └─── n1
+     │    ├─── :=
+     │    │    ├─── p
+     │    │    └─── +
+     │    │         ├─── p
+     │    │         └─── 1
+     │    └─── if
+     │         ├─── and
+     │         │    ├─── <>
+     │         │    │    ├─── n1
+     │         │    │    └─── n
+     │         │    └─── <
+     │         │         ├─── p
+     │         │         └─── 5
+     │         └─── subroutine call
+     │              ├─── writeln
+     │              ├─── Неверно! У вас осталось 
+     │              ├─── -
+     │              │    ├─── 5
+     │              │    └─── p
+     │              └───  попытки(ка)!
+     ├─── if
+     │    ├─── and
+     │    │    ├─── =
+     │    │    │    ├─── p
+     │    │    │    └─── 5
+     │    │    └─── <>
+     │    │         ├─── n
+     │    │         └─── n1
+     │    └─── subroutine call
+     │         ├─── writeln
+     │         ├─── Вы потратили все попытки! Правильное число - 
+     │         └─── n
+     └─── if
+          ├─── =
+          │    ├─── n
+          │    └─── n1
+          └─── subroutine call
+               ├─── writeln
+               ├─── Правильно! Вы угадали число на 
+               ├─── p
+               └─── -й попытке!

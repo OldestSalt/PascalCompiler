@@ -1,5 +1,4 @@
-﻿using System;
-namespace PascalCompiler {
+﻿namespace PascalCompiler {
 	public class PascalCompiler {
 		public static StreamWriter? outputStream = null;
 		static void Main(string[] args) {
@@ -20,11 +19,17 @@ namespace PascalCompiler {
 							OutputHandler.WriteLexeme(lexeme);
                         }
 						break;
-					case "-exp":
+					case "-e":
 						lexer = new Lexer.Lexer(fileName);
-						Expressions.ExpressionParser parser = new Expressions.ExpressionParser(lexer);
-						Expressions.Node tree = parser.ParseExpression();
-						OutputHandler.WriteAST(tree);
+						Expressions.ExpressionParser expressionsParser = new Expressions.ExpressionParser(lexer);
+						Expressions.Node tree = expressionsParser.ParseExpression();
+						OutputHandler.WriteExpressionAST(tree);
+						break;
+					case "-s":
+						lexer = new Lexer.Lexer(fileName);
+						Parser.Parser parser = new Parser.Parser(lexer);
+						Parser.Nodes.Node ast = parser.ParseProgram();
+						ast.Accept(new Parser.Nodes.PrintVisitor());
 						break;
 					default:
 						ExceptionHandler.Throw(Exceptions.UnknownKeys);
@@ -36,8 +41,11 @@ namespace PascalCompiler {
 					case "-lt":
 						TestSystem.LexerTests();
 						break;
-					case "-expt":
+					case "-et":
 						TestSystem.ExpressionsParserTest();
+						break;
+					case "-st":
+						TestSystem.ParserTest();
 						break;
 				}
 			}

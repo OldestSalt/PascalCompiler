@@ -1,0 +1,29 @@
+program
+└─── block
+     ├─── for
+     │    ├─── j
+     │    ├─── +
+     │    │    ├─── 12
+     │    │    └─── a
+     │    ├─── *
+     │    │    ├─── a
+     │    │    └─── 21
+     │    └─── block
+     │         ├─── :=
+     │         │    ├─── a
+     │         │    └─── subroutine call
+     │         │         ├─── sum
+     │         │         ├─── j
+     │         │         └─── j
+     │         └─── if
+     │              ├─── <
+     │              │    ├─── a
+     │              │    └─── 10
+     │              ├─── subroutine call
+     │              │    └─── break
+     │              └─── subroutine call
+     │                   ├─── do_stuff
+     │                   └─── j
+     └─── subroutine call
+          ├─── do_stuff
+          └─── a

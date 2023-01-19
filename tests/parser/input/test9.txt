@@ -1,0 +1,5 @@
+begin
+repeat
+a := b - 1 / a
+until a > 0
+end.

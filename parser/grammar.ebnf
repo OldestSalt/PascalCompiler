@@ -15,7 +15,7 @@
 <new_procedure> ::= "procedure" <identifier> <args> ";" <subroutine_body> ";"
 
 <functions> ::= <new_function> {<new_function>}
-<new_function> ::= "function" <identifier> <args> ":" <base_datatype> ";" <subroutine_body> ";"
+<new_function> ::= "function" <identifier> <args> ":" <datatype> ";" <subroutine_body> ";"
 
 <subroutine_body> ::= {<constants | <variables> | <types>} <block>
 <args> ::= "(" [<new_arg> {";" <new_arg>}] ")"
@@ -24,7 +24,7 @@
 
 <block> ::= "begin" [<statement> {";" <statement>}] "end"
 <statement> ::= <assignment_statement> | <subroutine_call> | <if_statement> | <while_statement> | <repeat_statement> | <for_statement> | <block>
-# <empty_statement> ::= "begin" "end"
+<empty_statement> ::= ""
 <assignment_statement> ::= (<identifier> | <array_access> | <record_access>) ":=" <expression>
 <subroutine_call> ::= <identifier> ["(" <expression> {"," <expression>} ")"]
 <if_statement> ::= "if" <expression> "then" <statement> ["else" <statement>]
@@ -33,18 +33,18 @@
 <for_statement> ::= "for" <identifier> ":=" <expression> ("to" | "downto") <expression> "do" <statement>
 
 <expression> ::= <simple_expression> [<compare_operator> <simple_expression>]
-<simple_expression> ::= <term> [<add_operator> <simple_expression>]
-<term> ::= <factor> [<multiply_operator> <term>]
-<factor> ::= {unary_operator} (("(" <expression> ")") | <constant> | <reference>)
-<reference> ::= <identifier> | <array_access> | <record_access> | <function_call>
+<simple_expression> ::= [<simple_expression> <add_operator>] <term>
+<term> ::= [<term> <multiply_operator>] <simple_term>
+<simple_term> ::= {unary_operator} <factor>
+<factor> ::= ("(" <expression> ")") | <constant> | <reference> | <subroutine_call>
+<reference> ::= <identifier> | <array_access> | <record_access>
 <array_access> ::= <reference> "[" <expression> {"," <expression>} "]"
 <record_access> ::= <reference> "." <identifier>
-<function_call> ::= <identifier> ["(" <expression> {"," <expression>} ")"]
 
 <datatype> ::= <base_datatype> | <array_datatype> | <record_datatype>
 <base_datatype> ::= <identifier>
 <array_datatype> ::= "array" "[" <indexes> {"," <indexes>} "]" "of" <datatype>
-<indexes> ::= <decimal_integer> ".." <decimal_integer>
+<indexes> ::= <non_negative_integer> ".." <non_negative_integer>
 <record_datatype> ::= "record" [<new_field> {";" <new_field>}] "end"
 <new_field> ::= <identifier> {"," <identifier>} ":" <datatype>
 

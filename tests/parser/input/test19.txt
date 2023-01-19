@@ -1,0 +1,3 @@
+begin
+aa() := a + 1
+end.

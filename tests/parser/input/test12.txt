@@ -1,0 +1,11 @@
+begin
+for j := 12 + a to a * 21 do
+begin
+a := sum(j, j);
+if a < 10 then
+break
+else 
+do_stuff(j);
+end
+do_stuff(a)
+end.

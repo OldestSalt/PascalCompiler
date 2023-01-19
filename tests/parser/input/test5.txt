@@ -1,0 +1,7 @@
+var i: integer;
+j: real;
+const c: string;
+type a = b;
+b = a;
+begin
+end.

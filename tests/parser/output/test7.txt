@@ -1,0 +1,16 @@
+program
+├─── optional block
+│    └─── procedures
+│         └─── procedure declaration
+│              ├─── aaa
+│              └─── subroutine body
+│                   └─── block
+└─── block
+     └─── if
+          ├─── <>
+          │    ├─── a
+          │    └─── b
+          ├─── subroutine call
+          │    └─── aaa
+          └─── subroutine call
+               └─── aaa

@@ -1,0 +1,68 @@
+program
+├─── optional block
+│    ├─── var
+│    │    ├─── variable declaration
+│    │    │    ├─── arr
+│    │    │    └─── array
+│    │    │         ├─── datatype: string
+│    │    │         ├─── ..
+│    │    │         │    ├─── 1
+│    │    │         │    └─── 2
+│    │    │         ├─── ..
+│    │    │         │    ├─── 1
+│    │    │         │    └─── 100
+│    │    │         └─── ..
+│    │    │              ├─── 1
+│    │    │              └─── 200
+│    │    └─── variable declaration
+│    │         ├─── a
+│    │         └─── record
+│    │              ├─── field
+│    │              │    ├─── field1
+│    │              │    ├─── field2
+│    │              │    └─── datatype: integer
+│    │              └─── field
+│    │                   ├─── field3
+│    │                   └─── datatype: real
+│    └─── functions
+│         └─── procedure declaration
+│              ├─── do_stuff
+│              ├─── record
+│              │    └─── field
+│              │         ├─── field1
+│              │         ├─── field2
+│              │         ├─── field3
+│              │         └─── datatype: string
+│              └─── subroutine body
+│                   └─── block
+│                        └─── :=
+│                             ├─── record access
+│                             │    ├─── do_stuff
+│                             │    └─── field2
+│                             └─── oo
+└─── block
+     ├─── :=
+     │    ├─── record access
+     │    │    ├─── a
+     │    │    └─── field1
+     │    └─── 200
+     ├─── :=
+     │    ├─── array access
+     │    │    ├─── arr
+     │    │    ├─── 2
+     │    │    ├─── 23
+     │    │    └─── 173
+     │    └─── record access
+     │         ├─── a
+     │         └─── field2
+     ├─── :=
+     │    ├─── record access
+     │    │    ├─── subroutine call
+     │    │    │    └─── do_stuff
+     │    │    └─── field3
+     │    └─── ii
+     └─── :=
+          ├─── record access
+          │    ├─── do_stuff
+          │    └─── field1
+          └─── 

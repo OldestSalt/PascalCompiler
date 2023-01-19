@@ -11,17 +11,27 @@ namespace PascalCompiler {
             var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Out;
             outputStream.WriteLine($"{lexeme!.lineNumber}, {lexeme!.charNumber}:\t{lexeme!.type}\t{lexeme!.value}\t{lexeme!.raw}");
         }
-        public static void WriteAST(Expressions.Node ast, string indents = "") {
+        public static void WriteExpressionAST(Expressions.Node ast, string indents = "") {
             var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Out;
             outputStream.WriteLine(ast.value);
             if (ast is Expressions.BinaryOperation) {
                 Expressions.BinaryOperation node = (Expressions.BinaryOperation)ast;
                 outputStream.Write(indents + "├─── ");
-                WriteAST(node.left, indents + "│    ");
+                WriteExpressionAST(node.left, indents + "│    ");
 
                 outputStream.Write(indents + "└─── ");
-                WriteAST(node.right, indents + "     ");
+                WriteExpressionAST(node.right, indents + "     ");
             }
+        }
+
+        public static void Write(string text) {
+            var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Out;
+            outputStream.Write(text);
+        }
+
+        public static void WriteLine(string text) {
+            var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Out;
+            outputStream.WriteLine(text);
         }
     }
 }

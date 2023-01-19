@@ -1,0 +1,29 @@
+program
+├─── optional block
+│    ├─── program name: aaa
+│    ├─── var
+│    │    ├─── variable declaration
+│    │    │    ├─── i
+│    │    │    └─── datatype: integer
+│    │    └─── variable declaration
+│    │         ├─── j
+│    │         └─── datatype: real
+│    └─── functions
+│         └─── procedure declaration
+│              ├─── sum
+│              ├─── subroutine args
+│              │    ├─── arg
+│              │    │    ├─── x
+│              │    │    └─── datatype: integer
+│              │    └─── arg
+│              │         ├─── y
+│              │         └─── datatype: integer
+│              ├─── datatype: integer
+│              └─── subroutine body
+│                   └─── block
+│                        └─── :=
+│                             ├─── sum
+│                             └─── +
+│                                  ├─── x
+│                                  └─── y
+└─── block

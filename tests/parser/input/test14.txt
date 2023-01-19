@@ -1,0 +1,18 @@
+program GuessTheNumber;
+var p: integer;
+n: integer;
+n1: integer;
+begin
+p:=0;
+writeln('Угадайте число от 0 до 10 за 5 попыток!');
+n:=random(11);
+repeat
+      write('Введите число: ');
+      readln(n1);
+      p:=p+1;
+      if (n1<>n)and(p<5) then writeln('Неверно! У вас осталось ', 5-p, ' попытки(ка)!');
+until (p=5)or(n=n1);
+if (p=5)and(n<>n1) then
+           writeln('Вы потратили все попытки! Правильное число - ', n);
+if n=n1 then writeln('Правильно! Вы угадали число на ', p,'-й попытке!');
+end.

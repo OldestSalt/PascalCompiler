@@ -1,0 +1,50 @@
+program
+├─── optional block
+│    └─── var
+│         ├─── variable declaration
+│         │    ├─── str
+│         │    └─── datatype: string
+│         └─── variable declaration
+│              ├─── i
+│              └─── datatype: integer
+└─── block
+     ├─── subroutine call
+     │    ├─── write
+     │    └─── Введите строку: 
+     ├─── subroutine call
+     │    ├─── readln
+     │    └─── str
+     ├─── while
+     │    ├─── <
+     │    │    ├─── i
+     │    │    └─── subroutine call
+     │    │         ├─── length
+     │    │         └─── str
+     │    └─── block
+     │         └─── if
+     │              ├─── =
+     │              │    ├─── array access
+     │              │    │    ├─── str
+     │              │    │    └─── i
+     │              │    └─── array access
+     │              │         ├─── str
+     │              │         └─── +
+     │              │              ├─── i
+     │              │              └─── 1
+     │              ├─── block
+     │              │    └─── subroutine call
+     │              │         ├─── delete
+     │              │         ├─── str
+     │              │         ├─── +
+     │              │         │    ├─── i
+     │              │         │    └─── 1
+     │              │         └─── 1
+     │              └─── :=
+     │                   ├─── i
+     │                   └─── +
+     │                        ├─── i
+     │                        └─── 1
+     └─── subroutine call
+          ├─── writeln
+          ├─── Изменённая строка: 
+          └─── str

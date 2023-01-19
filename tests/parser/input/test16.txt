@@ -1,0 +1,16 @@
+var str: string;
+    i: integer;
+begin
+write('Введите строку: ');
+readln(str);
+while i<length(str) do
+begin
+     if str[i]=str[i+1] then
+     begin
+          delete(str, i+1, 1);
+     end
+     else
+         i:=i+1;
+end;
+writeln('Изменённая строка: ', str);
+end.
