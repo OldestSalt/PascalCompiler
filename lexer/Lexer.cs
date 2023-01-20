@@ -52,6 +52,7 @@
                 nextLexeme.type = Constants.LexemeType.EOF;
             }
 
+            nextLexeme!.subtype = LexerUtils.GetEnumValue(nextLexeme.value);
             nextLexeme!.lineNumber = lineNumber;
             nextLexeme!.charNumber = charNumber + 1;
 

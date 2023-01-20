@@ -300,11 +300,13 @@ namespace PascalCompiler.Parser.Nodes {
     public class ForStatement : Statement {
         public Identifier counter;
         public Expression start;
+        public Lexer.Lexeme direction;
         public Expression end;
         public Statement body;
-        public ForStatement(Identifier counter, Expression start, Expression end, Statement body) {
+        public ForStatement(Identifier counter, Expression start, Lexer.Lexeme direction, Expression end, Statement body) {
             this.counter = counter;
             this.start = start;
+            this.direction = direction;
             this.end = end;
             this.body = body;
         }
