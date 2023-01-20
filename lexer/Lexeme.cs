@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace PascalCompiler.Lexer {
     public class Lexeme {
-        public Constants.LexemeType type { get; set; } = Constants.LexemeType.UNKNOWN;
+        public Constants.LexemeType type { get; set; }
+
         public uint lineNumber { get; set; } = 0;
         public uint charNumber { get; set; } = 0;
         public string? raw { get; set; } = null;

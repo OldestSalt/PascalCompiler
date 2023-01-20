@@ -15,11 +15,10 @@ namespace PascalCompiler.Parser {
         }
 
         public Program ParseProgram() {
-            Program node = new Program(ParseOptionalBlock(), ParseBlock());
-            if (lexer.curLexeme!.value != ".") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme.lineNumber, lexer.curLexeme.charNumber, ".");
-            }
+            OptionalBlock? optBlock = ParseOptionalBlock();
             lexer.GetNextLexeme();
+            Program node = new Program(optBlock, ParseBlock());
+            ParserUtils.RequireLexeme(lexer, ".");
             if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.EOF) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme.lineNumber, lexer.curLexeme.charNumber, "end of file");
             }
@@ -52,12 +51,10 @@ namespace PascalCompiler.Parser {
         public ProgramName? ParseProgramName() {
             lexer.GetNextLexeme();
             ProgramName? name = null;
-            if (lexer.curLexeme != null && lexer.curLexeme.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                name = new ProgramName(new Identifier(lexer.curLexeme));
-                if (lexer.GetNextLexeme()!.value != ";") {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
-                }
+            if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
+                name = new ProgramName(new Identifier(lexer.curLexeme!));
                 lexer.GetNextLexeme();
+                ParserUtils.RequireLexeme(lexer, ";");
             }
             else {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "program name");
@@ -114,21 +111,11 @@ namespace PascalCompiler.Parser {
                 }
             }
 
-            if (lexer.curLexeme!.value == "=") {
-                lexer.GetNextLexeme();
-                value = ParseExpression();
-            }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "=");
-            }
-            if (lexer.curLexeme!.value == ";") {
-                lexer.GetNextLexeme();
-                return new NewConstant(constName, constType, value);
-            }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
-            }
-            return null;
+            ParserUtils.RequireLexeme(lexer, "=");
+            value = ParseExpression();
+            ParserUtils.RequireLexeme(lexer, ";");
+
+            return new NewConstant(constName, constType, value);
         }
 
         public Variables ParseVariables() {
@@ -140,10 +127,8 @@ namespace PascalCompiler.Parser {
             if (varList.Count == 0) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "variable declaration");
             }
-            else {
-                return new Variables(varList);
-            }
-            return null;
+
+            return new Variables(varList);
         }
 
         public NewVariable ParseNewVariable() {
@@ -151,81 +136,61 @@ namespace PascalCompiler.Parser {
             Datatype varType = null;
             Expression? value = null;
             lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, ":");
 
-            if (lexer.curLexeme!.value == ":") {
-                if (lexer.GetNextLexeme()!.type == Lexer.Constants.LexemeType.IDENTIFIER || lexer.curLexeme!.value == "array" || lexer.curLexeme!.value == "record") {
-                    varType = ParseDatatype();
-                }
-                else {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "datatype");
-                }
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER && lexer.curLexeme!.value != "array" && lexer.curLexeme!.value != "record") {
+                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "datatype");
             }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ":");
-            }
+
+            varType = ParseDatatype();
 
             if (lexer.curLexeme!.value == "=") {
                 lexer.GetNextLexeme();
                 value = ParseExpression();
             }
 
-            if (lexer.curLexeme!.value == ";") {
-                lexer.GetNextLexeme();
-                return new NewVariable(varName, varType, value);
-            }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
-            }
-            return null;
+            ParserUtils.RequireLexeme(lexer, ";");
+
+            return new NewVariable(varName, varType, value);
         }
 
         public Types ParseTypes() {
             List<NewType> typeList = new List<NewType>();
             lexer.GetNextLexeme();
+
             while (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
                 typeList.Add(ParseNewType());
             }
             if (typeList.Count == 0) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "type declaration");
             }
-            else {
-                return new Types(typeList);
-            }
-            return null;
+
+            return new Types(typeList);
         }
 
         public NewType ParseNewType() {
             Identifier newTypeName = new Identifier(lexer.curLexeme!);
             Datatype oldTypeName = null;
             lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, "=");
 
-            if (lexer.curLexeme!.value == "=") {
-                if (lexer.GetNextLexeme()!.type == Lexer.Constants.LexemeType.IDENTIFIER || lexer.curLexeme!.value == "array" || lexer.curLexeme!.value == "record") {
-                    oldTypeName = ParseDatatype();
-                }
-                else {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "datatype");
-                }
-            }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "=");
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER && lexer.curLexeme!.value != "array" && lexer.curLexeme!.value != "record") {
+                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "datatype");
             }
 
-            if (lexer.curLexeme!.value == ";") {
-                lexer.GetNextLexeme();
-                return new NewType(newTypeName, oldTypeName);
-            }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
-            }
-            return null;
+            oldTypeName = ParseDatatype();
+            ParserUtils.RequireLexeme(lexer, ";");
+
+            return new NewType(newTypeName, oldTypeName);
         }
 
         public Procedures ParseProcedures() {
             List<NewProcedure> procList = new List<NewProcedure>();
+
             while (lexer.curLexeme!.value == "procedure") {
                 procList.Add(ParseNewProcedure());
             }
+
             return new Procedures(procList);
         }
 
@@ -235,102 +200,76 @@ namespace PascalCompiler.Parser {
             SubroutineBody body = null;
             lexer.GetNextLexeme();
 
-            if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                procName = new Identifier(lexer.curLexeme!);
-            }
-            else {
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "procedure name");
             }
-
+            procName = new Identifier(lexer.curLexeme!);
             lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, "(");
+            args = ParseSubroutineArgs(false);
 
-            if (lexer.curLexeme!.value == "(") {
-                args = ParseSubroutineArgs(false);
-            }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "(");
-            }
-
-            if ((new string[] { "const", "var", "type", "begin" }).Contains(lexer.curLexeme!.value)) {
-                
-                body = ParseSubroutineBody();
-            }
-            else {
+            if (!(new string[] { "const", "var", "type", "begin" }).Contains(lexer.curLexeme!.value)) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "procedure body");
             }
 
-            if (lexer.curLexeme!.value != ";") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
-            }
+            body = ParseSubroutineBody();
+            ParserUtils.RequireLexeme(lexer, ";");
 
-            lexer.GetNextLexeme();
             return new NewProcedure(procName, args, body);
         }
 
         public SubroutineArgs ParseSubroutineArgs(bool isFunction) {
             List<NewSubroutineArg> argsList= new List<NewSubroutineArg>();
-            lexer.GetNextLexeme();
 
             if ((new string[] { "const", "var", "out" }).Contains(lexer.curLexeme!.value) || lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
                 argsList.Add(ParseNewSubroutineArg());
                 while (lexer.curLexeme!.value == ";") {
                     lexer.GetNextLexeme();
-                    if ((new string[] { "const", "var", "out" }).Contains(lexer.curLexeme!.value) || lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                        argsList.Add(ParseNewSubroutineArg());
-                    }
-                    else {
+                    if (!(new string[] { "const", "var", "out" }).Contains(lexer.curLexeme!.value) && lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                         ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "arg");
                     }
+
+                    argsList.Add(ParseNewSubroutineArg());
                 }
             }
-            if (lexer.curLexeme!.value == ")") {
-                lexer.GetNextLexeme();
-                if (lexer.curLexeme!.value == ";" && !isFunction || lexer.curLexeme!.value == ":" && isFunction) {
-                    lexer.GetNextLexeme();
-                    return new SubroutineArgs(argsList);
-                }
-                else {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, isFunction ? ":" : ";");
-                }
+
+            ParserUtils.RequireLexeme(lexer, ")");
+
+            if (!(lexer.curLexeme!.value == ";" && !isFunction || lexer.curLexeme!.value == ":" && isFunction)) {
+                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, isFunction ? ":" : ";");
             }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ")");
-            }
-            return null;
+            lexer.GetNextLexeme();
+            
+            return new SubroutineArgs(argsList);
         }
 
         public NewSubroutineArg ParseNewSubroutineArg() {
             ArgModifier? mod = null;
-            List<Identifier> argNames= new List<Identifier>();
+            List<Identifier> argNames = new List<Identifier>();
             Node type = null;
 
             if ((new string[] { "const", "var", "out" }).Contains(lexer.curLexeme!.value)) {
-                mod = new ArgModifier(lexer.curLexeme.value);
+                mod = new ArgModifier(lexer.curLexeme!.value);
                 lexer.GetNextLexeme();
             }
 
-            if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                argNames.Add(new Identifier(lexer.curLexeme!));
-                lexer.GetNextLexeme();
-                while (lexer.curLexeme!.value == ",") {
-                    if (lexer.GetNextLexeme()!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                        argNames.Add(new Identifier(lexer.curLexeme!));
-                        lexer.GetNextLexeme();
-                    }
-                    else {
-                        ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "arg name");
-                    }
-                }
-            }
-            else {
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "arg name");
             }
+            argNames.Add(new Identifier(lexer.curLexeme!));
+            lexer.GetNextLexeme();
 
-            if (lexer.curLexeme!.value != ":") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ":");
+            while (lexer.curLexeme!.value == ",") {
+                if (lexer.GetNextLexeme()!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
+                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "arg name");
+                }
+
+                argNames.Add(new Identifier(lexer.curLexeme!));
+                lexer.GetNextLexeme();
             }
 
-            lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, ":");
+
 
             if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
                 type = new BaseDatatype(new Identifier(lexer.curLexeme!));
@@ -350,23 +289,22 @@ namespace PascalCompiler.Parser {
         public ArraySubroutineArg ParseArraySubroutineArg() {
             BaseDatatype type = null;
             lexer.GetNextLexeme();
-            if (lexer.curLexeme!.value == "of") {
-                if (lexer.GetNextLexeme()!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                    type = new BaseDatatype(new Identifier(lexer.curLexeme!));
-                }
-                else {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "datatype");
-                }
+
+            ParserUtils.RequireLexeme(lexer, "of");
+
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
+                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "datatype");
             }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "of");
-            }
+
+            type = new BaseDatatype(new Identifier(lexer.curLexeme!));
+
             return new ArraySubroutineArg(type);
         }
 
         public SubroutineBody ParseSubroutineBody() {
             List<DeclarationSection>? decls = new List<DeclarationSection>();
             Block body = null;
+
             while ((new string[] { "const", "var", "type" }).Contains(lexer.curLexeme!.value)) {
                 if (lexer.curLexeme!.value == "const") {
                     decls.Add(ParseConstants());
@@ -379,12 +317,9 @@ namespace PascalCompiler.Parser {
                 }
             }
 
-            if (lexer.curLexeme!.value == "begin") {
-                body = ParseBlock();
-            }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "subroutine body");
-            }
+            ParserUtils.RequireLexeme(lexer, "begin");
+
+            body = ParseBlock();
 
             return new SubroutineBody(decls, body);
         }
@@ -404,55 +339,37 @@ namespace PascalCompiler.Parser {
             SubroutineBody body = null;
             lexer.GetNextLexeme();
 
-            if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                funcName = new Identifier(lexer.curLexeme!);
-            }
-            else {
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "function name");
             }
 
+            funcName = new Identifier(lexer.curLexeme!);
+
             lexer.GetNextLexeme();
 
-            if (lexer.curLexeme!.value == "(") {
-                args = ParseSubroutineArgs(true);
-            }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "(");
-            }
+            ParserUtils.RequireLexeme(lexer, "(");
 
-            if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER || lexer.curLexeme!.value == "array" || lexer.curLexeme!.value == "record") {
-                returnType = ParseDatatype();
-            }
-            else {
+            args = ParseSubroutineArgs(true);
+
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER && lexer.curLexeme!.value != "array" && lexer.curLexeme!.value != "record") {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "return datatype");
             }
+            returnType = ParseDatatype();
 
-            //lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, ";");
 
-            if (lexer.curLexeme!.value != ";") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
-            }
-
-            lexer.GetNextLexeme();
-
-            if ((new string[] { "const", "var", "type", "begin" }).Contains(lexer.curLexeme!.value)) {
-
-                body = ParseSubroutineBody();
-            }
-            else {
+            if (!(new string[] { "const", "var", "type", "begin" }).Contains(lexer.curLexeme!.value)) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "function body");
             }
 
-            if (lexer.curLexeme!.value != ";") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
-            }
+            body = ParseSubroutineBody();
 
-            lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, ";");
+
             return new NewFunction(funcName, args, returnType, body);
         }
 
         public Block ParseBlock() {
-            lexer.GetNextLexeme();
             List<Statement> statements = new List<Statement>();
             
             while (lexer.curLexeme!.value != "end" && lexer.curLexeme!.type != Lexer.Constants.LexemeType.EOF) {
@@ -462,11 +379,9 @@ namespace PascalCompiler.Parser {
                 else {
                     statements.Add(ParseStatement());
                 }
+
                 if (lexer.curLexeme!.value == "end") break;
-                else if (lexer.curLexeme!.value != ";") {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
-                }
-                lexer.GetNextLexeme();
+                else ParserUtils.RequireLexeme(lexer, ";");
             }
             lexer.GetNextLexeme();
 
@@ -491,23 +406,24 @@ namespace PascalCompiler.Parser {
                 return ParseForStatement();
             }
             else if (lexer.curLexeme!.value == "begin") {
+                lexer.GetNextLexeme();
                 return ParseBlock();
             }
             else if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
                 Node node = ParseStatementStartingWithIdentifier();
+
                 if (node is SubroutineCall) {
                     return node as SubroutineCall;
                 }
-                else if (node is Identifier && (lexer.curLexeme!.value == ";" || lexer.curLexeme!.value == "end" || lexer.curLexeme!.value == "until" || lexer.curLexeme!.value == "else")) {
+                else if (node is Identifier && (new string[] { ";", "end", "until", "else" }).Contains(lexer.curLexeme!.value)) {
                     return new SubroutineCall(node as Identifier, null);
                 }
                 else {
                     return ParseAssignmentStatement(node as Reference);
                 }
             }
-            else {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "statement");
-            }
+
+            ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "statement");
 
             return null;
         }
@@ -553,20 +469,18 @@ namespace PascalCompiler.Parser {
                 }
             }
             else if (lexer.curLexeme!.value == ".") {
-                lexer.GetNextLexeme();
-                if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                    Identifier field = new Identifier(lexer.curLexeme!);
-                    lexer.GetNextLexeme();
+                if (lexer.GetNextLexeme()!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
+                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "field name");
+                }
 
-                    if (isSubroutine) {
-                        return new RecordAccess(new SubroutineCall(name, args), field);
-                    }
-                    else {
-                        return new RecordAccess(name, field);
-                    }
+                Identifier field = new Identifier(lexer.curLexeme!);
+                lexer.GetNextLexeme();
+
+                if (isSubroutine) {
+                    return new RecordAccess(new SubroutineCall(name, args), field);
                 }
                 else {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "field name");
+                    return new RecordAccess(name, field);
                 }
             }
             else if (isSubroutine) {
@@ -575,22 +489,19 @@ namespace PascalCompiler.Parser {
             else {
                 return name;
             }
-
-            return null;
         }
 
         public Node ParseReference(Node reference) {
             while (lexer.curLexeme!.value == "." || lexer.curLexeme!.value == "[") {
                 if (lexer.curLexeme!.value == ".") {
                     lexer.GetNextLexeme();
-                    if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                        Identifier field = new Identifier(lexer.curLexeme!);
-                        lexer.GetNextLexeme();
-                        reference =  new RecordAccess(reference, field);
-                    }
-                    else {
+                    if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                         ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "field name");
                     }
+
+                    Identifier field = new Identifier(lexer.curLexeme!);
+                    lexer.GetNextLexeme();
+                    reference =  new RecordAccess(reference, field);
                 }
                 else {
                     lexer.GetNextLexeme();
@@ -623,10 +534,7 @@ namespace PascalCompiler.Parser {
 
             condition = ParseExpression();
 
-            if (lexer.curLexeme!.value != "then") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "then");
-            }
-            lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, "then");
 
             trueStatement = ParseStatement();
 
@@ -646,10 +554,7 @@ namespace PascalCompiler.Parser {
 
             condition = ParseExpression();
 
-            if (lexer.curLexeme!.value != "do") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "do");
-            }
-            lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, "do");
 
             body = ParseStatement();
 
@@ -670,10 +575,7 @@ namespace PascalCompiler.Parser {
                     statements.Add(ParseStatement());
                 }
                 if (lexer.curLexeme!.value == "until") break;
-                else if (lexer.curLexeme!.value != ";") {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
-                }
-                lexer.GetNextLexeme();
+                else ParserUtils.RequireLexeme(lexer, ";");
             }
             lexer.GetNextLexeme();
 
@@ -694,25 +596,18 @@ namespace PascalCompiler.Parser {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "counter name");
             }
             counter = new Identifier(lexer.curLexeme!);
-
-            if (lexer.GetNextLexeme()!.value != ":=") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ":=");
-            }
             lexer.GetNextLexeme();
+
+            ParserUtils.RequireLexeme(lexer, ":=");
             start = ParseExpression();
 
             if (lexer.curLexeme!.value != "to" && lexer.curLexeme!.value != "downto") {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "to / downto");
             }
-
             lexer.GetNextLexeme();
 
             end = ParseExpression();
-
-            if (lexer.curLexeme!.value != "do") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "do");
-            }
-            lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, "do");
 
             body = ParseStatement();
 
@@ -724,10 +619,7 @@ namespace PascalCompiler.Parser {
             if (leftPart is SubroutineCall) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "variable, array access or record access");
             }
-            if (lexer.curLexeme!.value != ":=") {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ":=");
-            }
-            lexer.GetNextLexeme();
+            ParserUtils.RequireLexeme(lexer, ":=");
 
             return new AssignmentStatement(leftPart, ParseExpression());
         }
@@ -748,63 +640,50 @@ namespace PascalCompiler.Parser {
         }
 
         public ArrayDatatype ParseArrayDatatype() {
-            if (lexer.GetNextLexeme()!.value == "[") {
-                List<Nodes.Index> indexes = new List<Nodes.Index>();
-                Datatype type = null;
-
-                lexer.GetNextLexeme();
-                do {
-                    Constant start = null;
-                    Constant end = null;
-
-                    if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.INTEGER) {
-                        start = new Constant(lexer.curLexeme!);
-                    }
-                    else {
-                        ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "start index");
-                    }
-                    lexer.GetNextLexeme();
-
-                    if (lexer.curLexeme!.value != "..") {
-                        ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "..");
-                    }
-                    lexer.GetNextLexeme();
-
-                    if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.INTEGER) {
-                        end = new Constant(lexer.curLexeme!);
-                    }
-                    else {
-                        ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "start index");
-                    }
-                    lexer.GetNextLexeme();
-
-                    indexes.Add(new Nodes.Index(start, end));
-
-                    if (lexer.curLexeme!.value == ",") {
-                        lexer.GetNextLexeme();
-                    }
-                } while (lexer.curLexeme!.value != "]");
-
-                lexer.GetNextLexeme();
-
-                if (lexer.curLexeme!.value != "of") {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "of");
-                }
-                lexer.GetNextLexeme();
-
-                if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER || lexer.curLexeme!.value == "array" || lexer.curLexeme!.value == "record") {
-                    type = ParseDatatype();
-                }
-                else {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "array datatype");
-                }
-
-                return new ArrayDatatype(type, indexes);
-            }
-            else {
+            if (lexer.GetNextLexeme()!.value != "[") {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "[");
             }
-            return null;
+
+            List<Nodes.Index> indexes = new List<Nodes.Index>();
+            Datatype type = null;
+
+            lexer.GetNextLexeme();
+            do {
+                Constant start = null;
+                Constant end = null;
+
+                if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.INTEGER) {
+                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "start index");
+                }
+                start = new Constant(lexer.curLexeme!);
+                lexer.GetNextLexeme();
+
+                ParserUtils.RequireLexeme(lexer, "..");
+
+                if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.INTEGER) {
+                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "start index");
+                }
+                end = new Constant(lexer.curLexeme!);
+                lexer.GetNextLexeme();
+
+                indexes.Add(new Nodes.Index(start, end));
+
+                if (lexer.curLexeme!.value == ",") {
+                    lexer.GetNextLexeme();
+                }
+            } while (lexer.curLexeme!.value != "]");
+
+            lexer.GetNextLexeme();
+
+            ParserUtils.RequireLexeme(lexer, "of");
+
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER && lexer.curLexeme!.value != "array" && lexer.curLexeme!.value != "record") {
+                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "array datatype");
+            }
+
+            type = ParseDatatype();
+
+            return new ArrayDatatype(type, indexes);
         }
 
         public RecordDatatype ParseRecordDatatype() {
@@ -812,18 +691,14 @@ namespace PascalCompiler.Parser {
 
             lexer.GetNextLexeme();
             while (lexer.curLexeme!.value != "end") {
-                if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                    fields.Add(ParseNewField());
-                }
-                else {
+                if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                     ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "field name");
                 }
+                fields.Add(ParseNewField());
 
                 if (lexer.curLexeme!.value != "end" && lexer.curLexeme!.value != ";") {
                     ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ";");
                 }
-
-                //lexer.GetNextLexeme();
 
                 if (lexer.curLexeme!.value == ";") lexer.GetNextLexeme();
             }
@@ -838,27 +713,22 @@ namespace PascalCompiler.Parser {
             lexer.GetNextLexeme();
 
             while (lexer.curLexeme!.value != ":") {
-                if (lexer.curLexeme!.value != ",") {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ",");
-                }
-                lexer.GetNextLexeme();
+                ParserUtils.RequireLexeme(lexer, ",");
 
-                if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                    names.Add(new Identifier(lexer.curLexeme!));
-                }
-                else {
+                if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                     ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "field name");
                 }
+
+                names.Add(new Identifier(lexer.curLexeme!));
                 lexer.GetNextLexeme();
             }
 
             lexer.GetNextLexeme();
-            if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER || lexer.curLexeme!.value == "array" || lexer.curLexeme!.value == "record") {
-                type = ParseDatatype();
-            }
-            else {
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER && lexer.curLexeme!.value != "array" && lexer.curLexeme!.value != "record") {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "field datatype");
             }
+
+            type = ParseDatatype();
 
             return new NewField(names, type);
         }
@@ -930,16 +800,11 @@ namespace PascalCompiler.Parser {
             else if (lexer.curLexeme!.value == "(") {
                 lexer.GetNextLexeme();
                 value = ParseExpression(true);
-                if (lexer.curLexeme!.value != ")") {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ")");
-                }
-
-                lexer.GetNextLexeme();
+                ParserUtils.RequireLexeme(lexer, ")");
             }
             else {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "factor");
             }
-
 
             return new Factor(value);
         }

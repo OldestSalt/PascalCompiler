@@ -7,7 +7,6 @@
         public static readonly uint MAX_CHARACTER_NUMBER = 1114111;
         
         public enum LexemeType {
-            UNKNOWN,
             RESERVED,
             IDENTIFIER,
             STRING,
@@ -36,6 +35,8 @@
             "nil",
             "of",
             "packed",
+            "shl",
+            "shr",
             "procedure",
             "program",
             "record",
@@ -56,6 +57,60 @@
             "mod",
             "in"
         };
+
+        public enum ServiceWords {
+            ARRAY,
+            BEGIN,
+            CASE,
+            CONST,
+            DO,
+            DOWNTO,
+            ELSE,
+            END,
+            FOR,
+            FUNCTION,
+            IF,
+            OF,
+            PROCEDURE,
+            PROGRAM,
+            RECORD,
+            REPEAT,
+            THEN,
+            TO,
+            TYPE,
+            UNTIL,
+            VAR,
+            WHILE,
+            WITH,
+            AND,
+            OR,
+            XOR,
+            NOT,
+            DIV,
+            MOD,
+            PLUS,
+            MINUS,
+            MULTIPLY,
+            DIVIDE,
+            ASSIGN,
+            EQUAL,
+            GREATER,
+            LESSER,
+            GREATEROREQUAL,
+            LESSEROREQUAL,
+            NOTEQUAL,
+            ELLIPSIS,
+            COLON,
+            POINT,
+            COMMA,
+            SEMICOLON,
+            LEFTROUNDBRACKET,
+            RIGHTROUNDBRACKET,
+            LEFTSQUAREBRACKET,
+            RIGHTSQUAREBRACKET,
+            LEFTCURLYBRACKET,
+            RIGHTCURLYBRACKET
+        }
 
         public static readonly char[] Letters = {
             'a',
@@ -104,9 +159,7 @@
             "xor",
             "not",
             "div",
-            "mod",
-            "in",
-            "is"
+            "mod"
         };
 
         public static readonly char[] ModifierChars = {

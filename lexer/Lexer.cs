@@ -1,5 +1,5 @@
 ﻿namespace PascalCompiler.Lexer {
-    public class Lexer { //починить закрывающую фигурную скобку!
+    public class Lexer {
         private readonly StreamHandler streamHandler;
         private readonly IdentifierReservedWordSM identifierReservedWordSM;
         private readonly StringSM stringSM;
