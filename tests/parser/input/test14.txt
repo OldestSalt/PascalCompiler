@@ -1,7 +1,5 @@
 program GuessTheNumber;
-var p: integer;
-n: integer;
-n1: integer;
+var p, n, n1: integer;
 begin
 p:=0;
 writeln('Угадайте число от 0 до 10 за 5 попыток!');

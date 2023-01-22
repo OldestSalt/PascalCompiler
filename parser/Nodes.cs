@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PascalCompiler.Semantic.Symbols;
+using PascalCompiler.Semantic;
 
 namespace PascalCompiler.Parser.Nodes {
     public abstract class Node {
@@ -11,7 +8,8 @@ namespace PascalCompiler.Parser.Nodes {
             this.lexeme = lexeme;
         }
 
-        public abstract void Accept(Visitor visitor);
+        public abstract void Print(PrintVisitor visitor);
+        public abstract void Sym(SymVisitor visitor);
     }
 
     public class Program : Node {
@@ -19,7 +17,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.mainBlock = mainBlock;
             optionalBlock = optBlock;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitProgram(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitProgram(this);
         }
         public OptionalBlock? optionalBlock;
@@ -33,7 +34,10 @@ namespace PascalCompiler.Parser.Nodes {
             programName = progName;
             declarations = decls;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitOptionalBlock(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitOptionalBlock(this);
         }
     }
@@ -43,7 +47,10 @@ namespace PascalCompiler.Parser.Nodes {
         public Block(List<Statement>? statements) {
             this.statements = statements;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitBlock(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitBlock(this);
         }
     }
@@ -53,7 +60,10 @@ namespace PascalCompiler.Parser.Nodes {
         public ProgramName(Identifier name) {
             this.name = name;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitProgramName(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitProgramName(this);
         }
     }
@@ -67,21 +77,27 @@ namespace PascalCompiler.Parser.Nodes {
         public Constants(List<NewConstant> constants) {
             this.constants = constants;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitConstants(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitConstants(this);
         }
     }
 
     public class NewConstant : NewDeclaration {
         public Identifier name;
-        public Datatype? type;
+        public BaseDatatype? type;
         public Expression value;
-        public NewConstant(Identifier name, Datatype? type, Expression value) {
+        public NewConstant(Identifier name, BaseDatatype? type, Expression value) {
             this.name = name;
             this.type = type;
             this.value = value;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitNewConstant(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitNewConstant(this);
         }
     }
@@ -91,21 +107,27 @@ namespace PascalCompiler.Parser.Nodes {
         public Variables(List<NewVariable> variables) {
             this.variables = variables;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitVariables(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitVariables(this);
         }
     }
 
     public class NewVariable : NewDeclaration {
-        public Identifier name;
+        public List<Identifier> names;
         public Datatype type;
         public Expression? value;
-        public NewVariable(Identifier name, Datatype type, Expression? value) {
-            this.name = name;
+        public NewVariable(List<Identifier> names, Datatype type, Expression? value) {
+            this.names = names;
             this.type = type;
             this.value = value;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitNewVariable(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitNewVariable(this);
         }
     }
@@ -115,7 +137,10 @@ namespace PascalCompiler.Parser.Nodes {
         public Types(List<NewType> types) {
             this.types = types;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitTypes(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitTypes(this);
         }
     }
@@ -127,7 +152,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.name = name;
             this.type = type;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitNewType(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitNewType(this);
         }
     }
@@ -137,7 +165,10 @@ namespace PascalCompiler.Parser.Nodes {
         public Procedures(List<NewProcedure> procedures) {
             this.procedures = procedures;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitProcedures(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitProcedures(this);
         }
     }
@@ -151,7 +182,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.args = args;
             this.body = body;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitNewProcedure(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitNewProcedure(this);
         }
     }
@@ -161,7 +195,10 @@ namespace PascalCompiler.Parser.Nodes {
         public Functions(List<NewFunction> functions) {
             this.functions = functions;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitFunctions(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitFunctions(this);
         }
     }
@@ -177,7 +214,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.returnType = returnType;
             this.body = body;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitNewFunction(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitNewFunction(this);
         }
     }
@@ -189,7 +229,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.decls = decls;
             this.body = body;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitSubroutineBody(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitSubroutineBody(this);
         }
     }
@@ -199,7 +242,10 @@ namespace PascalCompiler.Parser.Nodes {
         public SubroutineArgs(List<NewSubroutineArg>? args) {
             this.args = args;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitSubroutineArgs(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitSubroutineArgs(this);
         }
     }
@@ -208,12 +254,16 @@ namespace PascalCompiler.Parser.Nodes {
         public ArgModifier? modifier;
         public List<Identifier> names;
         public Node type;
+        public SymVarParam? sym;
         public NewSubroutineArg(ArgModifier? modifier, List<Identifier> names, Node type) {
             this.modifier = modifier;
             this.names = names;
             this.type = type;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitNewSubroutineArg(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitNewSubroutineArg(this);
         }
     }
@@ -223,17 +273,24 @@ namespace PascalCompiler.Parser.Nodes {
         public ArgModifier(string value) {
             this.value = value;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitArgModifier(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitArgModifier(this);
         }
     }
 
     public class ArraySubroutineArg : Node {
         public BaseDatatype type;
+        public SymVarParam? sym;
         public ArraySubroutineArg(BaseDatatype type) {
             this.type = type;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitArraySubroutineArg(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitArraySubroutineArg(this);
         }
     }
@@ -242,19 +299,25 @@ namespace PascalCompiler.Parser.Nodes {
 
     public class EmptyStatement : Statement {
         public EmptyStatement() { }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitEmptyStatement(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitEmptyStatement(this);
         }
     }
 
     public class AssignmentStatement : Statement {
-        public Node leftPart;
+        public Reference leftPart;
         public Expression rightPart;
-        public AssignmentStatement(Node leftPart, Expression rightPart) {
+        public AssignmentStatement(Reference leftPart, Expression rightPart) {
             this.leftPart = leftPart;
             this.rightPart = rightPart;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitAssignmentStatement(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitAssignmentStatement(this);
         }
     }
@@ -268,7 +331,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.trueStatement = trueStatement;
             this.falseStatement = falseStatement;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitIfStatement(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitIfStatement(this);
         }
     }
@@ -280,7 +346,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.condition = condition;
             this.body = body;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitWhileStatement(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitWhileStatement(this);
         }
     }
@@ -292,7 +361,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.condition = condition;
             this.body = body;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitRepeatStatement(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitRepeatStatement(this);
         }
     }
@@ -310,7 +382,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.end = end;
             this.body = body;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitForStatement(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitForStatement(this);
         }
     }
@@ -318,11 +393,16 @@ namespace PascalCompiler.Parser.Nodes {
     public class SubroutineCall : Statement {
         public Identifier name;
         public List<Expression>? args;
+        public SymType? symType;
+        public uint lineNumber = 0, charNumber = 0;
         public SubroutineCall(Identifier name, List<Expression>? args) {
             this.name = name;
             this.args = args;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitSubroutineCall(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitSubroutineCall(this);
         }
     }
@@ -331,12 +411,17 @@ namespace PascalCompiler.Parser.Nodes {
         public SimpleExpression leftComparingOperand;
         public SimpleExpression? rightComparingOperand;
         public CompareOperator compareOperator;
+        public SymType? symType;
+        public uint lineNumber = 0, charNumber = 0;
         public Expression(SimpleExpression leftComparingOperand, SimpleExpression? rightComparingOperand, CompareOperator compareOperator) {
             this.leftComparingOperand = leftComparingOperand;
             this.rightComparingOperand = rightComparingOperand;
             this.compareOperator = compareOperator;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitExpression(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitExpression(this);
         }
     }
@@ -345,12 +430,17 @@ namespace PascalCompiler.Parser.Nodes {
         public SimpleExpression? left;
         public Term right;
         public AddOperator? addOperator;
+        public SymType? symType;
+        public uint lineNumber = 0, charNumber = 0;
         public SimpleExpression(SimpleExpression? left, AddOperator? addOperator, Term right) {
             this.left = left;
             this.addOperator = addOperator;
             this.right = right;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitSimpleExpression(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitSimpleExpression(this);
         }
     }
@@ -359,12 +449,17 @@ namespace PascalCompiler.Parser.Nodes {
         public Term? left;
         public MultiplyOperator? multiplyOperator;
         public SimpleTerm right;
+        public SymType? symType;
+        public uint lineNumber = 0, charNumber = 0;
         public Term(Term? left, MultiplyOperator? multiplyOperator, SimpleTerm right) {
             this.left = left;
             this.multiplyOperator = multiplyOperator;
             this.right = right;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitTerm(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitTerm(this);
         }
     }
@@ -372,26 +467,39 @@ namespace PascalCompiler.Parser.Nodes {
     public class SimpleTerm : Node {
         public List<UnaryOperator>? unaryOperators;
         public Factor factor;
+        public SymType? symType;
+        public uint lineNumber = 0, charNumber = 0;
         public SimpleTerm(List<UnaryOperator>? unaryOperators, Factor factor) {
             this.unaryOperators = unaryOperators;
             this.factor = factor;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitSimpleTerm(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitSimpleTerm(this);
         }
     }
 
     public class Factor : Node {
         public Node value;
+        public SymType? symType;
+        public uint lineNumber = 0, charNumber = 0;
         public Factor(Node value) {
             this.value = value;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitFactor(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitFactor(this);
         }
     }
 
-    public abstract class Reference: Node { }
+    public abstract class Reference: Node {
+        public SymType? symType;
+        public uint lineNumber = 0, charNumber = 0;
+    }
 
     public class ArrayAccess: Reference {
         public Node name;
@@ -400,7 +508,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.name = name;
             this.indexes = indexes;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitArrayAccess(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitArrayAccess(this);
         }
     }
@@ -412,19 +523,27 @@ namespace PascalCompiler.Parser.Nodes {
             this.name = name;
             this.field = field;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitRecordAccess(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitRecordAccess(this);
         }
     }
 
-    public abstract class Datatype : Node { }
+    public abstract class Datatype : Node {
+        public SymType? symType;
+    }
 
     public class BaseDatatype : Datatype {
         public Identifier name;
         public BaseDatatype(Identifier name) {
             this.name = name;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitBaseDatatype(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitBaseDatatype(this);
         }
     }
@@ -436,7 +555,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.type = type;
             this.sizes = sizes;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitArrayDatatype(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitArrayDatatype(this);
         }
     }
@@ -448,7 +570,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.start = start;
             this.end = end;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitIndex(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitIndex(this);
         }
     }
@@ -458,7 +583,10 @@ namespace PascalCompiler.Parser.Nodes {
         public RecordDatatype(List<NewField> fields) {
             this.fields = fields;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitRecordDatatype(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitRecordDatatype(this);
         }
     }
@@ -470,7 +598,10 @@ namespace PascalCompiler.Parser.Nodes {
             this.names = names;
             this.type = type;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitNewField(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitNewField(this);
         }
     }
@@ -481,35 +612,48 @@ namespace PascalCompiler.Parser.Nodes {
 
     public class CompareOperator : Operator {
         public CompareOperator(Lexer.Lexeme value) : base(value) { }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitCompareOperator(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitCompareOperator(this);
         }
     }
 
     public class AddOperator : Operator {
         public AddOperator(Lexer.Lexeme value) : base(value) { }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitAddOperator(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitAddOperator(this);
         }
     }
 
     public class MultiplyOperator : Operator {
         public MultiplyOperator(Lexer.Lexeme value) : base(value) { }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitMultiplyOperator(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitMultiplyOperator(this);
         }
     }
 
     public class UnaryOperator : Operator {
         public UnaryOperator(Lexer.Lexeme value) : base(value) { }
-        public override void Accept(Visitor visitor) { }
+        public override void Print(PrintVisitor visitor) { }
+        public override void Sym(SymVisitor visitor) { }
     }
 
     public class Identifier : Reference {
         public Identifier(Lexer.Lexeme lexeme) {
             this.lexeme = lexeme;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitIdentifier(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitIdentifier(this);
         }
     }
@@ -518,7 +662,10 @@ namespace PascalCompiler.Parser.Nodes {
         public Constant(Lexer.Lexeme lexeme) {
             this.lexeme = lexeme;
         }
-        public override void Accept(Visitor visitor) {
+        public override void Print(PrintVisitor visitor) {
+            visitor.VisitConstant(this);
+        }
+        public override void Sym(SymVisitor visitor) {
             visitor.VisitConstant(this);
         }
     }

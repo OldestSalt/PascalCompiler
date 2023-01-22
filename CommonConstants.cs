@@ -1,13 +1,5 @@
 ﻿using PascalCompiler.Lexer;
 using PascalCompiler.Parser.Nodes;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace PascalCompiler {
     public static class CommonConstants {
         public enum ServiceWords {
@@ -48,18 +40,18 @@ namespace PascalCompiler {
             EQUAL,
             GREATER,
             LESSER,
-            GREATEROREQUAL,
-            LESSEROREQUAL,
-            NOTEQUAL,
+            GREATER_OR_EQUAL,
+            LESSER_OR_EQUAL,
+            NOT_EQUAL,
             ELLIPSIS,
             COLON,
             POINT,
             COMMA,
             SEMICOLON,
-            LEFTROUNDBRACKET,
-            RIGHTROUNDBRACKET,
-            LEFTSQUAREBRACKET,
-            RIGHTSQUAREBRACKET,
+            LEFT_ROUND_BRACKET,
+            RIGHT_ROUND_BRACKET,
+            LEFT_SQUARE_BRACKET,
+            RIGHT_SQUARE_BRACKET,
             OUT
         }
 
@@ -100,18 +92,18 @@ namespace PascalCompiler {
             { ServiceWords.EQUAL, "=" },
             { ServiceWords.GREATER, ">" },
             { ServiceWords.LESSER, "<" },
-            { ServiceWords.GREATEROREQUAL, ">=" },
-            { ServiceWords.LESSEROREQUAL, "<=" },
-            { ServiceWords.NOTEQUAL, "<>" },
+            { ServiceWords.GREATER_OR_EQUAL, ">=" },
+            { ServiceWords.LESSER_OR_EQUAL, "<=" },
+            { ServiceWords.NOT_EQUAL, "<>" },
             { ServiceWords.ELLIPSIS, ".." },
             { ServiceWords.COLON, ":" },
             { ServiceWords.POINT, "." },
             { ServiceWords.COMMA, "," },
             { ServiceWords.SEMICOLON, ";" },
-            { ServiceWords.LEFTROUNDBRACKET, "(" },
-            { ServiceWords.RIGHTROUNDBRACKET, ")" },
-            { ServiceWords.LEFTSQUAREBRACKET, "[" },
-            { ServiceWords.RIGHTSQUAREBRACKET, "]" },
+            { ServiceWords.LEFT_ROUND_BRACKET, "(" },
+            { ServiceWords.RIGHT_ROUND_BRACKET, ")" },
+            { ServiceWords.LEFT_SQUARE_BRACKET, "[" },
+            { ServiceWords.RIGHT_SQUARE_BRACKET, "]" },
             { ServiceWords.OUT, "out"}
         };
 

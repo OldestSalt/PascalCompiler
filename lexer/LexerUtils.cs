@@ -36,20 +36,20 @@
                 case "/": return CommonConstants.ServiceWords.DIVIDE;
                 case ":=": return CommonConstants.ServiceWords.ASSIGN;
                 case "=": return CommonConstants.ServiceWords.EQUAL;
-                case "<>": return CommonConstants.ServiceWords.NOTEQUAL;
+                case "<>": return CommonConstants.ServiceWords.NOT_EQUAL;
                 case "<": return CommonConstants.ServiceWords.LESSER;
-                case "<=": return CommonConstants.ServiceWords.LESSEROREQUAL;
-                case ">=": return CommonConstants.ServiceWords.GREATEROREQUAL;
+                case "<=": return CommonConstants.ServiceWords.LESSER_OR_EQUAL;
+                case ">=": return CommonConstants.ServiceWords.GREATER_OR_EQUAL;
                 case ">": return CommonConstants.ServiceWords.GREATER;
                 case "..": return CommonConstants.ServiceWords.ELLIPSIS;
                 case ":": return CommonConstants.ServiceWords.COLON;
                 case ".": return CommonConstants.ServiceWords.POINT;
                 case ",": return CommonConstants.ServiceWords.COMMA;
                 case ";": return CommonConstants.ServiceWords.SEMICOLON;
-                case "(": return CommonConstants.ServiceWords.LEFTROUNDBRACKET;
-                case ")": return CommonConstants.ServiceWords.RIGHTROUNDBRACKET;
-                case "[": return CommonConstants.ServiceWords.LEFTSQUAREBRACKET;
-                case "]": return CommonConstants.ServiceWords.RIGHTSQUAREBRACKET;
+                case "(": return CommonConstants.ServiceWords.LEFT_ROUND_BRACKET;
+                case ")": return CommonConstants.ServiceWords.RIGHT_ROUND_BRACKET;
+                case "[": return CommonConstants.ServiceWords.LEFT_SQUARE_BRACKET;
+                case "]": return CommonConstants.ServiceWords.RIGHT_SQUARE_BRACKET;
                 case "out": return CommonConstants.ServiceWords.OUT;
                 default: return CommonConstants.ServiceWords.NONE;
             }

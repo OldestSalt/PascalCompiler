@@ -19,7 +19,17 @@ namespace PascalCompiler {
         LongIdentifierName,
         TestError,
         ExpectedCharacters,
-        UnknownError
+        UnknownError,
+        DeclaredIdentifier,
+        UnknownType,
+        IncompatibleTypes,
+        UnknownIdentifier,
+        OperationError,
+        NotAVar,
+        NotAnArray,
+        NotARecord,
+        UnknownField,
+        NoReturnValue
     }
 
     public static class ExceptionHandler {
@@ -37,14 +47,28 @@ namespace PascalCompiler {
             { Exceptions.LongIdentifierName, "Identifier's name is too long" },
             { Exceptions.TestError, "Test error detected, check output files" },
             { Exceptions.ExpectedCharacters, "Expected" },
-            { Exceptions.UnknownError, "Unknown error" }
+            { Exceptions.UnknownError, "Unknown error" },
+            { Exceptions.DeclaredIdentifier, "Duplicate indentidier" },
+            { Exceptions.UnknownType, "Unknown datatype" },
+            { Exceptions.IncompatibleTypes, "Incompatible types" },
+            { Exceptions.UnknownIdentifier, "Unknown identifier" },
+            { Exceptions.OperationError, "Operation error:" },
+            { Exceptions.NotAVar, "It is not a variable or constant" },
+            { Exceptions.NotAnArray, "It is not an array" },
+            { Exceptions.NotARecord, "It is not a record" },
+            { Exceptions.UnknownField, "Unknown record field" },
+            { Exceptions.NoReturnValue, "No return value" }
+
         };
 
-        public static void Throw(Exceptions ex, uint line = 0, uint ch = 0, string expectedChars = "") {
+        public static void Throw(Exceptions ex, uint line = 0, uint ch = 0, params string[] extraData) {
             var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Error;
 
-            if (expectedChars != "") {
-                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]} {expectedChars}");
+            if (extraData.Length == 1) {
+                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]} {extraData[0]}");
+            }
+            else if (ex == Exceptions.IncompatibleTypes) {
+                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]}: expected '{extraData[0]}'; got '{extraData[1]}'");
             }
             else if (line != 0 && ch != 0) {
                 outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]}");

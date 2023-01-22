@@ -5,12 +5,11 @@
 			if (args.Length == 2) {
 				string fileName = args[0];
 				string compilerStage = args[1];
-				Lexer.Lexer lexer = null;
+				Lexer.Lexer lexer = new Lexer.Lexer(fileName);
+                Parser.Parser parser = new Parser.Parser(lexer);
 
-
-				switch (compilerStage) {
+                switch (compilerStage) {
 					case "-l":
-						lexer = new Lexer.Lexer(fileName);
 						Lexer.Lexeme? lexeme = lexer.GetNextLexeme();
 						OutputHandler.WriteLexeme(lexeme);
 
@@ -20,18 +19,21 @@
                         }
 						break;
 					case "-e":
-						lexer = new Lexer.Lexer(fileName);
 						Expressions.ExpressionParser expressionsParser = new Expressions.ExpressionParser(lexer);
 						Expressions.Node tree = expressionsParser.ParseExpression();
 						OutputHandler.WriteExpressionAST(tree);
 						break;
 					case "-s":
-						lexer = new Lexer.Lexer(fileName);
-						Parser.Parser parser = new Parser.Parser(lexer);
+						
 						Parser.Nodes.Node ast = parser.ParseProgram();
-						ast.Accept(new Parser.Nodes.PrintVisitor());
+						ast.Print(new Parser.Nodes.PrintVisitor());
 						break;
-					default:
+					case "-sym":
+                        Parser.Nodes.Node symAst = parser.ParseProgram();
+						symAst.Sym(new Semantic.SymVisitor());
+                        symAst.Print(new Parser.Nodes.PrintVisitor());
+						break;
+                    default:
 						ExceptionHandler.Throw(Exceptions.UnknownKeys);
 						break;
                 }

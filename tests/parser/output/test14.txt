@@ -2,13 +2,9 @@ program
 ├─── optional block
 │    ├─── program name: guessthenumber
 │    └─── var
-│         ├─── variable declaration
-│         │    ├─── p
-│         │    └─── datatype: integer
-│         ├─── variable declaration
-│         │    ├─── n
-│         │    └─── datatype: integer
 │         └─── variable declaration
+│              ├─── p
+│              ├─── n
 │              ├─── n1
 │              └─── datatype: integer
 └─── block

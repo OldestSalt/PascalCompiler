@@ -2,7 +2,7 @@
   "profiles": {
     "PascalCompiler": {
       "commandName": "Project",
-      "commandLineArgs": "-st"
+      "commandLineArgs": "tests/parser/input.txt -sym"
     }
   }
 }

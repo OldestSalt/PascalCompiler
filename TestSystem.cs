@@ -104,7 +104,7 @@ namespace PascalCompiler {
                 Parser.Parser parser = new Parser.Parser(lexer);
 
                 try {
-                    parser.ParseProgram().Accept(new PrintVisitor());
+                    parser.ParseProgram().Print(new PrintVisitor());
                     if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.EOF) {
                         ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber);
                     }

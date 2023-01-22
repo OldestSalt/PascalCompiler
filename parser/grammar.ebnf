@@ -6,7 +6,7 @@
 <new_constant> ::= <identifier> [":" <datatype>] "=" <expression> ";"
 
 <variables> ::= "var" <new_variable> {<new_variable>}
-<new_variable> ::= <identifier> ":" <datatype> ["=" <expression>] ";"
+<new_variable> ::= <identifier> {"," <identifier>} ":" <datatype> ["=" <expression>] ";"
 
 <types> ::= "type" <new_type> {<new_type>}
 <new_type> ::= <identifier> "=" <datatype> ";"
@@ -25,7 +25,7 @@
 <block> ::= "begin" [<statement> {";" <statement>}] "end"
 <statement> ::= <assignment_statement> | <subroutine_call> | <if_statement> | <while_statement> | <repeat_statement> | <for_statement> | <block>
 <empty_statement> ::= ""
-<assignment_statement> ::= (<identifier> | <array_access> | <record_access>) ":=" <expression>
+<assignment_statement> ::= <reference> ":=" <expression>
 <subroutine_call> ::= <identifier> ["(" <expression> {"," <expression>} ")"]
 <if_statement> ::= "if" <expression> "then" <statement> ["else" <statement>]
 <while_statement> ::= "while" <expression> "do" <statement>
@@ -38,8 +38,8 @@
 <simple_term> ::= {unary_operator} <factor>
 <factor> ::= ("(" <expression> ")") | <constant> | <reference> | <subroutine_call>
 <reference> ::= <identifier> | <array_access> | <record_access>
-<array_access> ::= <reference> "[" <expression> {"," <expression>} "]"
-<record_access> ::= <reference> "." <identifier>
+<array_access> ::= (<reference> | <subroutine_call>) "[" <expression> {"," <expression>} "]"
+<record_access> ::= (<reference> | <subroutine_call>) "." <identifier>
 
 <datatype> ::= <base_datatype> | <array_datatype> | <record_datatype>
 <base_datatype> ::= <identifier>
