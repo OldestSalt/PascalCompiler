@@ -1,4 +1,5 @@
 ﻿using PascalCompiler.Parser.Nodes;
+using System.ComponentModel.DataAnnotations;
 
 namespace PascalCompiler.Parser {
     public class Parser {
@@ -755,7 +756,9 @@ namespace PascalCompiler.Parser {
                 ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ")");
             }
 
-            return new Expression(leftComparingOperand, rightComparingOperand, compareOperator);
+            Expression ex = new Expression(leftComparingOperand, rightComparingOperand, compareOperator);
+            ex.isVariable = rightComparingOperand == null ? leftComparingOperand.isVariable : false;
+            return ex;
         }
 
         public SimpleExpression ParseSimpleExpression() {
@@ -767,6 +770,7 @@ namespace PascalCompiler.Parser {
                 se = new SimpleExpression(se, op, ParseTerm());
             }
 
+            se.isVariable = se.left == null ? se.right.isVariable : false;
             return se;
         }
 
@@ -780,6 +784,7 @@ namespace PascalCompiler.Parser {
                 t = new Term(t, op, ParseSimpleTerm());
             }
 
+            t.isVariable = t.left == null ? t.right.isVariable : false;
             return t;
         }
 
@@ -790,7 +795,10 @@ namespace PascalCompiler.Parser {
                 unaryOperators.Add(new UnaryOperator(lexer.curLexeme!));
                 lexer.GetNextLexeme();
             }
-            return new SimpleTerm(unaryOperators, ParseFactor());
+
+            SimpleTerm st = new SimpleTerm(unaryOperators, ParseFactor());
+            st.isVariable = unaryOperators.Count == 0 ? st.factor.isVariable : false;
+            return st;
         }
 
         public Factor ParseFactor() {
@@ -813,7 +821,9 @@ namespace PascalCompiler.Parser {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "factor");
             }
 
-            return new Factor(value);
+            Factor f = new Factor(value!);
+            f.isVariable = value is Identifier;
+            return f;
         }
     }
 }

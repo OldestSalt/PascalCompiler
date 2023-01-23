@@ -40,7 +40,7 @@
 12, 47:	IDENTIFIER	death	death
 13, 1:	IDENTIFIER	someidentifier	someidentifier
 14, 1:	IDENTIFIER	wow	wow
-14, 5:	OPERATOR	is	is
+14, 5:	RESERVED	is	is
 14, 8:	IDENTIFIER	this	this
 14, 13:	IDENTIFIER	identifiers	identifiers
 15, 1:	IDENTIFIER	thenitsidentifierstoothoughitsstartingwithreservedword	thenitsidentifierstoothoughitsstartingwithreservedword
@@ -51,4 +51,4 @@
 26, 1:	INTEGER	111	111
 26, 4:	IDENTIFIER	identifiercantstartwithdigitsothatnumberisinteger	identifiercantstartwithdigitsothatnumberisinteger
 27, 1:	IDENTIFIER	maximumofidentifiersnameis127characters0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000	maximumofidentifiersnameis127characters0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-Error detected at position 28, 128: Identifier's name is too long.
+Error detected at position 28, 128: Identifier's name is too long

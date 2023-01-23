@@ -1,5 +1,7 @@
 ﻿using PascalCompiler.Parser.Nodes;
 using PascalCompiler.Semantic.Symbols;
+using System.Security;
+using System.Xml.Linq;
 
 namespace PascalCompiler.Semantic {
     public class SymVisitor {
@@ -11,6 +13,15 @@ namespace PascalCompiler.Semantic {
             symStack.pushSym(new SymTypeInteger("integer"));
             symStack.pushSym(new SymType("string"));
             symStack.pushSym(new SymTypeReal("real"));
+
+            symStack.pushSym(new SymWrite("writeln"));
+            symStack.pushSym(new SymWrite("write"));
+            symStack.pushSym(new SymRead("readln"));
+            symStack.pushSym(new SymRead("read"));
+
+            
+            //symStack.pushSym(new SymFunc("trunc", new List<SymVarParam>() { new SymVarParam("r", new SymTypeReal("real"), null) }, new SymTypeInteger("integer")));
+            //symStack.pushSym(new SymFunc("round", new List<SymVarParam>() { new SymVarParam("r", new SymTypeReal("real"), null) }, new SymTypeInteger("integer")));
             symStack.pushScope();
 
             if (node.optionalBlock != null) VisitOptionalBlock(node.optionalBlock);
@@ -52,7 +63,11 @@ namespace PascalCompiler.Semantic {
             VisitExpression(node.value);
             if (node.type != null) {
                 VisitBaseDatatype(node.type);
+                if (node.type.symType!.name != node.value.symType!.name && !(node.type.symType!.name == "real" || node.value.symType!.name == "integer")) {
+                    ExceptionHandler.Throw(Exceptions.IncompatibleTypes, node.value.lineNumber, node.value.charNumber, node.type.symType!.name, node.value.symType!.name);
+                }
             }
+
             symStack.pushSym(new SymVarConst(node.name.lexeme!.value!, node.value.symType!));
         }
         public void VisitVariables(Variables node) {
@@ -66,7 +81,12 @@ namespace PascalCompiler.Semantic {
                 if (symStack.checkSymInScope(name.lexeme!.value!)) {
                     ExceptionHandler.Throw(Exceptions.DeclaredIdentifier, name.lexeme.lineNumber, name.lexeme.charNumber, name.lexeme!.value!);
                 }
-
+                if (node.value != null) {
+                    VisitExpression(node.value);
+                    if (node.type.symType!.name != node.value.symType!.name && !(node.type.symType!.name == "real" || node.value.symType!.name == "integer")) {
+                        ExceptionHandler.Throw(Exceptions.IncompatibleTypes, node.value.lineNumber, node.value.charNumber, node.type.symType!.name, node.value.symType!.name);
+                    }
+                }
                 symStack.pushSym(new SymVar(name.lexeme!.value!, node.type.symType!));
             }
 
@@ -85,15 +105,92 @@ namespace PascalCompiler.Semantic {
             VisitDatatype(node.type);
             symStack.pushSym(new SymTypeAlias(node.type.symType!, node.name.lexeme!.value!));
         }
-        public void VisitProcedures(Procedures node) { }
-        public void VisitNewProcedure(NewProcedure node) { }
-        public void VisitFunctions(Functions node) { }
-        public void VisitNewFunction(NewFunction node) { }
-        public void VisitSubroutineBody(SubroutineBody node) { } //scope +1 here!
-        public void VisitSubroutineArgs(SubroutineArgs node) { }
-        public void VisitNewSubroutineArg(NewSubroutineArg node) { }
+        public void VisitProcedures(Procedures node) {
+            foreach (var procedure in node.procedures) {
+                VisitNewProcedure(procedure);
+            }
+        }
+        public void VisitNewProcedure(NewProcedure node) {
+            if (symStack.checkSymInScope(node.name.lexeme!.value!)) {
+                ExceptionHandler.Throw(Exceptions.DeclaredIdentifier, node.name.lexeme.lineNumber, node.name.lexeme.charNumber, node.name.lexeme!.value!);
+            }
+
+            symStack.pushScope();
+
+            VisitSubroutineArgs(node.args);
+            VisitSubroutineBody(node.body);
+
+            symStack.popScope();
+            symStack.pushSym(new SymProc(node.name.lexeme.value!, node.args.sym));
+        }
+        public void VisitFunctions(Functions node) {
+            foreach (var function in node.functions) {
+                VisitNewFunction(function);
+            }
+        }
+        public void VisitNewFunction(NewFunction node) {
+            if (symStack.checkSymInScope(node.name.lexeme!.value!)) {
+                ExceptionHandler.Throw(Exceptions.DeclaredIdentifier, node.name.lexeme.lineNumber, node.name.lexeme.charNumber, node.name.lexeme!.value!);
+            }
+
+            symStack.pushScope();
+
+            VisitDatatype(node.returnType);
+
+            symStack.pushSym(new SymVar(node.name.lexeme.value!, node.returnType.symType!));
+
+            VisitSubroutineArgs(node.args);
+            
+            VisitSubroutineBody(node.body);
+
+            symStack.popScope();
+            symStack.pushSym(new SymFunc(node.name.lexeme.value!, node.args.sym, node.returnType.symType!));
+        }
+        public void VisitSubroutineBody(SubroutineBody node) {
+            if (node.decls != null) {
+                foreach (var decl in node.decls) {
+                    VisitDeclarationSection(decl);
+                }
+            }
+
+            VisitBlock(node.body);
+        }
+        public void VisitSubroutineArgs(SubroutineArgs node) {
+            if (node.args != null) {
+                foreach (var arg in node.args) {
+                    VisitNewSubroutineArg(arg);
+
+                    node.sym.AddRange(arg.sym);
+                }
+            }
+        }
+        public void VisitNewSubroutineArg(NewSubroutineArg node) {
+            CommonConstants.ServiceWords? modifier = null;
+            if (node.modifier != null) {
+                modifier = Lexer.LexerUtils.GetEnumValue(node.modifier.value);
+            }
+
+            if (node.type is BaseDatatype) VisitBaseDatatype((BaseDatatype)node.type);
+            else if (node.type is ArraySubroutineArg) VisitArraySubroutineArg((ArraySubroutineArg)node.type);
+
+            foreach (var name in node.names) {
+                if (symStack.checkSymInScope(name.lexeme!.value!)) {
+                    ExceptionHandler.Throw(Exceptions.DeclaredIdentifier, name.lexeme.lineNumber, name.lexeme.charNumber, name.lexeme!.value!);
+                }
+
+                SymVarParam arg = null!;
+                if (node.type is BaseDatatype) arg = new SymVarParam(name.lexeme!.value!, ((BaseDatatype)node.type).symType!, modifier);
+                else if (node.type is ArraySubroutineArg) arg = new SymVarParam(name.lexeme!.value!, ((ArraySubroutineArg)node.type).symType!, modifier);
+
+                symStack.pushSym(arg);
+                node.sym.Add(arg);
+            }
+        }
         public void VisitArgModifier(ArgModifier node) { }
-        public void VisitArraySubroutineArg(ArraySubroutineArg node) { }
+        public void VisitArraySubroutineArg(ArraySubroutineArg node) {
+            VisitBaseDatatype(node.type);
+            node.symType = new SymTypeArray($"array of {node.type.symType!.name}", node.type.symType);
+        }
         public void VisitStatement(Statement node) {
             if (node is IfStatement) VisitIfStatement((IfStatement)node);
             else if (node is WhileStatement) VisitWhileStatement((WhileStatement)node);
@@ -105,9 +202,9 @@ namespace PascalCompiler.Semantic {
         }
         public void VisitEmptyStatement(EmptyStatement node) { }
         public void VisitAssignmentStatement(AssignmentStatement node) {
-            VisitReference(node.leftPart);
+            VisitReference(node.leftPart, true);
             VisitExpression(node.rightPart);
-            if (node.leftPart.symType?.name != node.rightPart.symType?.name) {
+            if (node.leftPart.symType?.name != node.rightPart.symType?.name && !(node.leftPart.symType?.name == "real" && node.rightPart.symType?.name == "integer")) {
                 ExceptionHandler.Throw(Exceptions.IncompatibleTypes, node.rightPart.lineNumber, node.rightPart.charNumber, node.leftPart.symType?.name!, node.rightPart.symType?.name!);
             }
         }
@@ -170,15 +267,55 @@ namespace PascalCompiler.Semantic {
 
             VisitStatement(node.body);
         }
-        public void VisitSubroutineCall(SubroutineCall node) { }
+        public void VisitSubroutineCall(SubroutineCall node) {
+            if (!symStack.checkSym(node.name.lexeme!.value!)) {
+                ExceptionHandler.Throw(Exceptions.UnknownSubroutine, node.name.lexeme!.lineNumber, node.name.lexeme!.charNumber);
+            }
+
+            Symbol subroutine = symStack.getSym(node.name.lexeme!.value!)!;
+            if (subroutine is SymProc) {
+                SymProc procedure = (SymProc)symStack.getSym(node.name.lexeme!.value!)!;
+                if (procedure.args.Count != node.args.Count) {
+                    ExceptionHandler.Throw(Exceptions.IncorrectParameters, node.name.lexeme!.lineNumber, node.name.lexeme!.charNumber);
+                }
+
+                for (int i = 0; i < node.args.Count; i++) {
+                    VisitExpression(node.args[i]);
+                    if (node.args[i].symType!.name != procedure.args[i].type.name && !(node.args[i].symType!.name == "integer" && procedure.args[i].type.name == "real")) {
+                        ExceptionHandler.Throw(Exceptions.IncorrectParameters, node.args[i].lineNumber, node.args[i].charNumber);
+                    }
+
+                    if ((procedure.args[i].modifier == CommonConstants.ServiceWords.VAR || procedure.args[i].modifier == CommonConstants.ServiceWords.OUT) && !node.args[i].isVariable) {
+                        ExceptionHandler.Throw(Exceptions.ExpectedCharacters, node.args[i].lineNumber, node.args[i].charNumber, "variable");
+                    }
+                }
+
+                if (procedure is SymFunc) node.symType = ((SymFunc)procedure).returnType;
+            }
+            else if (subroutine is SymWrite || subroutine is SymRead) {
+                for (int i = 0; i < node.args.Count; i++) {
+                    VisitExpression(node.args[i]);
+                    if (!new string[] { "integer", "real", "string" }.Contains(node.args[i].symType!.name)) {
+                        ExceptionHandler.Throw(Exceptions.IncorrectParameters, node.args[i].lineNumber, node.args[i].lexeme!.charNumber);
+                    }
+                }
+            }
+        }
         public void VisitExpression(Expression node) {
             VisitSimpleExpression(node.leftComparingOperand);
             if (node.rightComparingOperand != null) {
                 VisitSimpleExpression(node.rightComparingOperand);
-                string leftType = node.leftComparingOperand.symType?.name!;
-                string rightType = node.rightComparingOperand.symType?.name!;
-                if (leftType != rightType || (leftType == "integer" || leftType == "real") && rightType == "string" || (rightType == "integer" || rightType == "real") && leftType == "string") {
-                    ExceptionHandler.Throw(Exceptions.IncompatibleTypes, node.compareOperator!.lexeme!.lineNumber, node.compareOperator!.lexeme!.charNumber, leftType!, rightType!);
+                SymType leftType = node.leftComparingOperand.symType!;
+                SymType rightType = node.rightComparingOperand.symType!;
+                if (node.compareOperator!.lexeme!.subtype == CommonConstants.ServiceWords.EQUAL || node.compareOperator.lexeme.subtype == CommonConstants.ServiceWords.NOT_EQUAL) {
+                    if (leftType is not SymTypeScalar && rightType is not SymTypeScalar || leftType.name != rightType.name) {
+                        ExceptionHandler.Throw(Exceptions.IncomparableTypes, node.compareOperator!.lexeme!.lineNumber, node.compareOperator!.lexeme!.charNumber);
+                    }
+                }
+                else {
+                    if (leftType is not SymTypeScalar && rightType is not SymTypeScalar) {
+                        ExceptionHandler.Throw(Exceptions.IncomparableTypes, node.compareOperator!.lexeme!.lineNumber, node.compareOperator!.lexeme!.charNumber);
+                    }
                 }
                 node.symType = new SymTypeInteger("integer");
             }
@@ -312,7 +449,7 @@ namespace PascalCompiler.Semantic {
             else if (node.value is SubroutineCall) {
                 VisitSubroutineCall((SubroutineCall)node.value);
                 Lexer.Lexeme subroutineName = ((SubroutineCall)node.value).name.lexeme!;
-                if (symStack.getSym(subroutineName.value!) is SymProc) {
+                if (symStack.getSym(subroutineName.value!) is not SymFunc) {
                     ExceptionHandler.Throw(Exceptions.NoReturnValue, subroutineName.lineNumber, subroutineName.charNumber);
                 }
                 node.lineNumber = ((SubroutineCall)node.value).name.lexeme!.lineNumber;
@@ -327,7 +464,7 @@ namespace PascalCompiler.Semantic {
                 else if (((Constant)node.value).lexeme!.type == Lexer.Constants.LexemeType.STRING) node.symType = new SymType("string");
             }
         }
-        public void VisitReference(Reference node) {
+        public void VisitReference(Reference node, bool isAssignment = false) {
             if (node is ArrayAccess) VisitArrayAccess((ArrayAccess)node);
             else if (node is RecordAccess) VisitRecordAccess((RecordAccess)node);
             else if (node is Identifier) {
@@ -335,8 +472,14 @@ namespace PascalCompiler.Semantic {
                     ExceptionHandler.Throw(Exceptions.UnknownIdentifier, node.lexeme.lineNumber, node.lexeme.charNumber, node.lexeme!.value!);
                 }
 
-                if (symStack.getSym(node.lexeme!.value!) is not SymVar) {
-                    ExceptionHandler.Throw(Exceptions.NotAVar, node.lexeme.lineNumber, node.lexeme.charNumber);
+                Symbol sym = symStack.getSym(node.lexeme!.value!)!;
+                if (sym is not SymVar) {
+                    ExceptionHandler.Throw(Exceptions.NotAVar, node.lexeme.lineNumber, node.lexeme.charNumber, node.lexeme!.value!);
+                }
+
+
+                if (isAssignment && (sym is SymVarParam && ((SymVarParam)sym).modifier == CommonConstants.ServiceWords.CONST || sym is SymVarConst)) {
+                    ExceptionHandler.Throw(Exceptions.ImmutableSymbol, node.lexeme.lineNumber, node.lexeme.charNumber, node.lexeme!.value!);
                 }
 
                 node.symType = ((SymVar)symStack.getSym(node.lexeme!.value!)!).type;

@@ -39,7 +39,7 @@
 14, 17:	IDENTIFIER	mlim	mlim
 14, 21:	SEPARATOR	;	;
 15, 1:	IDENTIFIER	brbrbeng	brbrbeng
-15, 10:	OPERATOR	in	in
+15, 10:	RESERVED	in	in
 15, 13:	SEPARATOR	[	[
 15, 14:	INTEGER	13	13
 15, 16:	SEPARATOR	..	..
@@ -59,7 +59,7 @@
 17, 16:	SEPARATOR	;	;
 17, 17:	SEPARATOR	;	;
 18, 1:	IDENTIFIER	cake	cake
-18, 6:	OPERATOR	is	is
+18, 6:	RESERVED	is	is
 18, 9:	IDENTIFIER	lie	lie
 19, 1:	SEPARATOR	(	(
 19, 2:	SEPARATOR	[	[

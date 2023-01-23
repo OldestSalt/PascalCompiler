@@ -18,4 +18,4 @@
 13, 1:	INTEGER	2147483647	&17777777777
 14, 1:	INTEGER	2147483647	%1111111111111111111111111111111
 15, 1:	INTEGER	2147483647	2147483647
-Error detected at position 16, 11: Integer overflow.
+Error detected at position 16, 11: Integer overflow

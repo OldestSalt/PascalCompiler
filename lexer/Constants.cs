@@ -55,7 +55,10 @@
             "not",
             "div",
             "mod",
-            "out"
+            "out",
+            "in",
+            "uses",
+            "is"
         };
 
         public static readonly char[] Letters = {

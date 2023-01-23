@@ -77,27 +77,6 @@ namespace PascalCompiler.Semantic.Symbols {
                 stack.Peek().pushSym(sym);
             }
         }
-
-        //public void pushVar(NewVariable node) {
-        //    SymType symType = null;
-
-        //    if (node.type is BaseDatatype) {
-        //        var type = (node.type as BaseDatatype)!.name.lexeme!;
-        //        if (!checkSym(type.value!) || getSym(type.value!) is not SymType) {
-        //            ExceptionHandler.Throw(Exceptions.UnknownType, type.lineNumber, type.charNumber);
-        //        }
-        //        symType = new SymType(node.type, type.value!);
-        //    }
-        //    else if (node.type is ArrayDatatype) {
-        //        var elemType = (node.type as ArrayDatatype).
-        //    }
-
-        //    foreach (var name in node.names) {
-        //        if (checkSymInScope(name.lexeme!.value!)) {
-        //            ExceptionHandler.Throw(Exceptions.DeclaredIdentifier, name.lexeme!.lineNumber, name.lexeme!.charNumber);
-        //        }
-        //    }
-        //}
     }
 
     public class SymType : Symbol {
@@ -123,7 +102,7 @@ namespace PascalCompiler.Semantic.Symbols {
         }
     }
 
-    public class SymTypeArray : SymType { //name example: array [1..20] of Integer
+    public class SymTypeArray : SymType {
         public SymType elemType;
         public SymTypeArray(string name, SymType elemType) : base(name) {
             this.elemType = elemType;
@@ -145,7 +124,10 @@ namespace PascalCompiler.Semantic.Symbols {
     }
 
     public class SymVarParam : SymVar {
-        public SymVarParam(string name, SymType type) : base(name, type) { }
+        public CommonConstants.ServiceWords? modifier;
+        public SymVarParam(string name, SymType type, CommonConstants.ServiceWords? modifier) : base(name, type) {
+            this.modifier = modifier;
+        }
     }
 
     public class SymVarConst : SymVar {
@@ -154,17 +136,30 @@ namespace PascalCompiler.Semantic.Symbols {
 
     public class SymProc : Symbol {
         public List<SymVarParam> args;
-        public List<SymVar> locals;
-        public SymProc(string name, List<SymVarParam> args, List<SymVar> locals) : base(name) {
+        public SymProc(string name, List<SymVarParam> args) : base(name) {
             this.args = args;
-            this.locals = locals;
         }
     }
 
     public class SymFunc : SymProc {
         public SymType returnType;
-        public SymFunc(string name, List<SymVarParam> args, List<SymVar> locals, SymType returnType) : base(name, args, locals) {
+        public SymFunc(string name, List<SymVarParam> args, SymType returnType) : base(name, args) {
             this.returnType = returnType;
         }
+    }
+
+    //public class SymOverloadingParam : Symbol {
+    //    public List<SymType> types;
+    //    public SymOverloadingParam(string name, List<SymType> types) : base(name) {
+    //        this.types = types;
+    //    }
+    //}
+
+    public class SymWrite : Symbol {
+        public SymWrite(string name) : base(name) { }
+    }
+
+    public class SymRead : Symbol {
+        public SymRead(string name) : base(name) { }
     }
 }

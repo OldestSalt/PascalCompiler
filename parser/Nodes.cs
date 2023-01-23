@@ -239,6 +239,7 @@ namespace PascalCompiler.Parser.Nodes {
 
     public class SubroutineArgs : Node {
         public List<NewSubroutineArg>? args;
+        public List<SymVarParam> sym = new List<SymVarParam>();
         public SubroutineArgs(List<NewSubroutineArg>? args) {
             this.args = args;
         }
@@ -254,7 +255,7 @@ namespace PascalCompiler.Parser.Nodes {
         public ArgModifier? modifier;
         public List<Identifier> names;
         public Node type;
-        public SymVarParam? sym;
+        public List<SymVarParam> sym = new List<SymVarParam>();
         public NewSubroutineArg(ArgModifier? modifier, List<Identifier> names, Node type) {
             this.modifier = modifier;
             this.names = names;
@@ -283,7 +284,7 @@ namespace PascalCompiler.Parser.Nodes {
 
     public class ArraySubroutineArg : Node {
         public BaseDatatype type;
-        public SymVarParam? sym;
+        public SymType? symType;
         public ArraySubroutineArg(BaseDatatype type) {
             this.type = type;
         }
@@ -392,7 +393,7 @@ namespace PascalCompiler.Parser.Nodes {
 
     public class SubroutineCall : Statement {
         public Identifier name;
-        public List<Expression>? args;
+        public List<Expression> args;
         public SymType? symType;
         public uint lineNumber = 0, charNumber = 0;
         public SubroutineCall(Identifier name, List<Expression>? args) {
@@ -410,10 +411,11 @@ namespace PascalCompiler.Parser.Nodes {
     public class Expression : Node {
         public SimpleExpression leftComparingOperand;
         public SimpleExpression? rightComparingOperand;
-        public CompareOperator compareOperator;
+        public CompareOperator? compareOperator;
         public SymType? symType;
         public uint lineNumber = 0, charNumber = 0;
-        public Expression(SimpleExpression leftComparingOperand, SimpleExpression? rightComparingOperand, CompareOperator compareOperator) {
+        public bool isVariable = false;
+        public Expression(SimpleExpression leftComparingOperand, SimpleExpression? rightComparingOperand, CompareOperator? compareOperator) {
             this.leftComparingOperand = leftComparingOperand;
             this.rightComparingOperand = rightComparingOperand;
             this.compareOperator = compareOperator;
@@ -432,6 +434,7 @@ namespace PascalCompiler.Parser.Nodes {
         public AddOperator? addOperator;
         public SymType? symType;
         public uint lineNumber = 0, charNumber = 0;
+        public bool isVariable = false;
         public SimpleExpression(SimpleExpression? left, AddOperator? addOperator, Term right) {
             this.left = left;
             this.addOperator = addOperator;
@@ -451,6 +454,7 @@ namespace PascalCompiler.Parser.Nodes {
         public SimpleTerm right;
         public SymType? symType;
         public uint lineNumber = 0, charNumber = 0;
+        public bool isVariable = false;
         public Term(Term? left, MultiplyOperator? multiplyOperator, SimpleTerm right) {
             this.left = left;
             this.multiplyOperator = multiplyOperator;
@@ -469,6 +473,7 @@ namespace PascalCompiler.Parser.Nodes {
         public Factor factor;
         public SymType? symType;
         public uint lineNumber = 0, charNumber = 0;
+        public bool isVariable = false;
         public SimpleTerm(List<UnaryOperator>? unaryOperators, Factor factor) {
             this.unaryOperators = unaryOperators;
             this.factor = factor;
@@ -485,6 +490,7 @@ namespace PascalCompiler.Parser.Nodes {
         public Node value;
         public SymType? symType;
         public uint lineNumber = 0, charNumber = 0;
+        public bool isVariable = false;
         public Factor(Node value) {
             this.value = value;
         }

@@ -3,9 +3,11 @@ using PascalCompiler.Parser.Nodes;
 
 namespace PascalCompiler {
     public static class TestSystem {
+        public static StringWriter? output = null;
         public static void LexerTests() {
             foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/lexer/input").GetFiles()) {
-                PascalCompiler.outputStream = new StreamWriter($"{CommonConstants.ProjectPath}/tests/lexer/output.txt");
+                output = new StringWriter();
+                Console.SetOut(output);
                 Lexer.Lexer lexer = new Lexer.Lexer(file.FullName);
                 try {
                     Lexer.Lexeme? lexeme = lexer.GetNextLexeme();
@@ -20,17 +22,20 @@ namespace PascalCompiler {
                 }
 
                 List<string>? correctLexemeList = null;
-                PascalCompiler.outputStream.Close();
-                PascalCompiler.outputStream = null;
 
                 try {
-                    correctLexemeList = File.ReadAllLines($"{CommonConstants.ProjectPath}/tests/lexer/output/{file.Name}").ToList();
+                    correctLexemeList = File.ReadAllText($"{CommonConstants.ProjectPath}/tests/lexer/output/{file.Name}").Split('\n').ToList();
                 }
                 catch (FileNotFoundException) {
                     ExceptionHandler.Throw(Exceptions.TestError);
                 }
 
-                List<string> lexemeList = File.ReadAllLines($"{CommonConstants.ProjectPath}/tests/lexer/output.txt").ToList();
+                StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
+                origin.AutoFlush = true;
+                Console.SetOut(origin);
+
+                List<string> lexemeList = output.ToString().Split('\n').ToList();
+                output = null;
 
                 bool isCorrect = true;
 
@@ -52,7 +57,8 @@ namespace PascalCompiler {
 
         public static void ExpressionsParserTest() {
             foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/expressions/input").GetFiles()) {
-                PascalCompiler.outputStream = new StreamWriter($"{CommonConstants.ProjectPath}/tests/expressions/output.txt");
+                output = new StringWriter();
+                Console.SetOut(output);
                 Lexer.Lexer lexer = new Lexer.Lexer(file.FullName);
                 Expressions.ExpressionParser parser = new Expressions.ExpressionParser(lexer);
 
@@ -67,17 +73,20 @@ namespace PascalCompiler {
                 }
 
                 List<string>? correctASTlines = null;
-                PascalCompiler.outputStream.Close();
-                PascalCompiler.outputStream = null;
 
                 try {
-                    correctASTlines = File.ReadAllLines($"{CommonConstants.ProjectPath}/tests/expressions/output/{file.Name}").ToList();
+                    correctASTlines = File.ReadAllText($"{CommonConstants.ProjectPath}/tests/expressions/output/{file.Name}").Split('\n').ToList();
                 }
                 catch (FileNotFoundException) {
                     ExceptionHandler.Throw(Exceptions.TestError);
                 }
 
-                List<string> ASTlines = File.ReadAllLines($"{CommonConstants.ProjectPath}/tests/expressions/output.txt").ToList();
+                StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
+                origin.AutoFlush = true;
+                Console.SetOut(origin);
+
+                List<string> ASTlines = output.ToString().Split('\n').ToList();
+                output = null;
 
                 bool isCorrect = true;
 
@@ -99,7 +108,8 @@ namespace PascalCompiler {
 
         public static void ParserTest() {
             foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/parser/input").GetFiles()) {
-                PascalCompiler.outputStream = new StreamWriter($"{CommonConstants.ProjectPath}/tests/parser/output.txt");
+                output = new StringWriter();
+                Console.SetOut(output);
                 Lexer.Lexer lexer = new Lexer.Lexer(file.FullName);
                 Parser.Parser parser = new Parser.Parser(lexer);
 
@@ -114,17 +124,72 @@ namespace PascalCompiler {
                 }
 
                 List<string>? correctASTlines = null;
-                PascalCompiler.outputStream.Close();
-                PascalCompiler.outputStream = null;
+                StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
+                origin.AutoFlush = true;
+                Console.SetOut(origin);
 
                 try {
-                    correctASTlines = File.ReadAllLines($"{CommonConstants.ProjectPath}/tests/parser/output/{file.Name}").ToList();
+                    correctASTlines = File.ReadAllText($"{CommonConstants.ProjectPath}/tests/parser/output/{file.Name}").Split('\n').ToList();
                 }
                 catch (FileNotFoundException) {
                     ExceptionHandler.Throw(Exceptions.TestError);
                 }
 
-                List<string> ASTlines = File.ReadAllLines($"{CommonConstants.ProjectPath}/tests/parser/output.txt").ToList();
+                List<string> ASTlines = output.ToString().Split('\n').ToList();
+                output = null;
+
+
+                bool isCorrect = true;
+
+                if (correctASTlines!.Count != ASTlines.Count) {
+                    Console.WriteLine($"Test file '{file.Name}':\tWrong answer!");
+                    continue;
+                }
+
+                for (int i = 0; i < correctASTlines!.Count; i++) {
+                    if (correctASTlines[i] != ASTlines[i]) {
+                        Console.WriteLine($"Test file '{file.Name}':\tWrong answer in line {i}!");
+                        isCorrect = false;
+                        break;
+                    }
+                }
+                if (isCorrect) Console.WriteLine($"Test file '{file.Name}':\tOK");
+            }
+        }
+
+        public static void SemanticTest() {
+            foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/semantic/input").GetFiles()) {
+                output = new StringWriter();
+                Console.SetOut(output);
+                Lexer.Lexer lexer = new Lexer.Lexer(file.FullName);
+                Parser.Parser parser = new Parser.Parser(lexer);
+
+                try {
+                    Program ast = parser.ParseProgram();
+                    ast.Sym(new Semantic.SymVisitor());
+                    ast.Print(new PrintVisitor());
+                    if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.EOF) {
+                        ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber);
+                    }
+                }
+                catch {
+
+                }
+
+                List<string>? correctASTlines = null;
+                StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
+                origin.AutoFlush = true;
+                Console.SetOut(origin);
+
+                try {
+                    correctASTlines = File.ReadAllText($"{CommonConstants.ProjectPath}/tests/semantic/output/{file.Name}").Split('\n').ToList();
+                }
+                catch (FileNotFoundException) {
+                    ExceptionHandler.Throw(Exceptions.TestError);
+                }
+
+                List<string> ASTlines = output.ToString().Split('\n').ToList();
+                output = null;
 
                 bool isCorrect = true;
 

@@ -1,6 +1,5 @@
 ﻿namespace PascalCompiler {
 	public class PascalCompiler {
-		public static StreamWriter? outputStream = null;
 		static void Main(string[] args) {
 			if (args.Length == 2) {
 				string fileName = args[0];
@@ -49,7 +48,10 @@
 					case "-st":
 						TestSystem.ParserTest();
 						break;
-				}
+                    case "-symt":
+                        TestSystem.SemanticTest();
+                        break;
+                }
 			}
 
 			else {

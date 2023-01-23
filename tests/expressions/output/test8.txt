@@ -1,1 +1,1 @@
-Error detected at position 1, 3: Unexpected character ).
+Error detected at position 1, 3: Unexpected character )

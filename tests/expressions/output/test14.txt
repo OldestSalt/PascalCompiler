@@ -1,1 +1,1 @@
-Error detected at position 1, 4: Expected operand.
+Error detected at position 1, 4: Expected operand

@@ -9,4 +9,4 @@
 9, 1:	STRING	there's whitespace ->	'there''s whitespace ->'
 9, 26:	STRING	c	#99
 9, 30:	STRING	<- there's too	'<- there''s too'
-Error detected at position 10, 20: String has an incorrect format.
+Error detected at position 10, 20: String has an incorrect format

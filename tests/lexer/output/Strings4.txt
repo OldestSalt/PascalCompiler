@@ -1,1 +1,1 @@
-Error detected at position 1, 28: Integer overflow.
+Error detected at position 1, 28: Integer overflow

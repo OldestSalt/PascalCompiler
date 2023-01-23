@@ -29,7 +29,11 @@ namespace PascalCompiler {
         NotAnArray,
         NotARecord,
         UnknownField,
-        NoReturnValue
+        NoReturnValue,
+        ImmutableSymbol,
+        UnknownSubroutine,
+        IncorrectParameters,
+        IncomparableTypes
     }
 
     public static class ExceptionHandler {
@@ -53,31 +57,34 @@ namespace PascalCompiler {
             { Exceptions.IncompatibleTypes, "Incompatible types" },
             { Exceptions.UnknownIdentifier, "Unknown identifier" },
             { Exceptions.OperationError, "Operation error:" },
-            { Exceptions.NotAVar, "It is not a variable or constant" },
+            { Exceptions.NotAVar, "It is not a variable" },
             { Exceptions.NotAnArray, "It is not an array" },
             { Exceptions.NotARecord, "It is not a record" },
             { Exceptions.UnknownField, "Unknown record field" },
-            { Exceptions.NoReturnValue, "No return value" }
+            { Exceptions.NoReturnValue, "No return value" },
+            { Exceptions.ImmutableSymbol, "It is immutable symbol" },
+            { Exceptions.UnknownSubroutine, "Call to unknown function or procedure" },
+            { Exceptions.IncorrectParameters, "Incorrect parameters" },
+            { Exceptions.IncomparableTypes, "Incomparable types" }
 
         };
 
         public static void Throw(Exceptions ex, uint line = 0, uint ch = 0, params string[] extraData) {
-            var outputStream = PascalCompiler.outputStream != null ? PascalCompiler.outputStream : Console.Error;
 
             if (extraData.Length == 1) {
-                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]} {extraData[0]}");
+                Console.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]} {extraData[0]}");
             }
             else if (ex == Exceptions.IncompatibleTypes) {
-                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]}: expected '{extraData[0]}'; got '{extraData[1]}'");
+                Console.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]}: expected '{extraData[0]}'; got '{extraData[1]}'");
             }
             else if (line != 0 && ch != 0) {
-                outputStream.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]}");
+                Console.WriteLine($"Error detected at position {line}, {ch}: {ExceptionMessages[ex]}");
             }
             else {
-                outputStream.WriteLine($"Error detected: {ExceptionMessages[ex]}");
+                Console.WriteLine($"Error detected: {ExceptionMessages[ex]}");
             }
 
-            if (PascalCompiler.outputStream != null) {
+            if (TestSystem.output != null) {
                 throw new Exception();
             }
             else {

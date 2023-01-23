@@ -7,4 +7,4 @@
 7, 1:	REAL	0,0005874958	58749582384000000000000000000000000000000000000e-50
 8, 1:	REAL	4,8579616E+23	485796174572564785367436.1
 9, 1:	REAL	6,9E-37	6.9e-37
-Error detected at position 10, 8: Float overflow.
+Error detected at position 10, 8: Float overflow
