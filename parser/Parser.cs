@@ -341,7 +341,7 @@ namespace PascalCompiler.Parser {
         public NewFunction ParseNewFunction() {
             Identifier funcName = null;
             SubroutineArgs args = null;
-            Datatype returnType = null;
+            BaseDatatype returnType = null;
             SubroutineBody body = null;
             lexer.GetNextLexeme();
 
@@ -357,10 +357,10 @@ namespace PascalCompiler.Parser {
 
             args = ParseSubroutineArgs(true);
 
-            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER && lexer.curLexeme!.subtype != CommonConstants.ServiceWords.ARRAY && lexer.curLexeme!.subtype != CommonConstants.ServiceWords.RECORD) {
+            if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "return datatype");
             }
-            returnType = ParseDatatype();
+            returnType = new BaseDatatype(new Identifier(lexer.curLexeme!));
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.SEMICOLON);
 

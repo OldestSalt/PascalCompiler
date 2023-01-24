@@ -1,9 +1,1 @@
-program aaa;
-var i: integer;
-j: real;
-function sum(x: integer; y: integer): integer;
-begin
-sum := x + y
-end;
-begin
-end.
+Error detected at position 4, 39: Expected ;

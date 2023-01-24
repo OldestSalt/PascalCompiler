@@ -1,0 +1,6 @@
+var arr: array [1..2, 1..100, 1..200] of integer;
+a: record field1, field2: integer; field3: real end;
+begin
+a.field1 := 200;
+arr[2, 23, 173] := a.field2;
+end.

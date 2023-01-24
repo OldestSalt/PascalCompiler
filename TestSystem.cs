@@ -166,8 +166,10 @@ namespace PascalCompiler {
 
                 try {
                     Program ast = parser.ParseProgram();
-                    ast.Sym(new Semantic.SymVisitor());
+                    Semantic.SymVisitor sym = new Semantic.SymVisitor();
+                    ast.Sym(sym);
                     ast.Print(new PrintVisitor());
+                    sym.Print();
                     if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.EOF) {
                         ExceptionHandler.Throw(Exceptions.UnexpectedCharacter, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber);
                     }

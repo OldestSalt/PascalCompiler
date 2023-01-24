@@ -1,0 +1,63 @@
+program
+├─── optional block
+│    ├─── program name: maximum
+│    └─── var
+│         ├─── variable declaration
+│         │    ├─── max
+│         │    └─── datatype: integer
+│         ├─── variable declaration
+│         │    ├─── i
+│         │    └─── datatype: integer
+│         ├─── variable declaration
+│         │    ├─── ch
+│         │    └─── datatype: integer
+│         └─── variable declaration
+│              ├─── n
+│              └─── datatype: integer
+└─── block
+     ├─── subroutine call
+     │    ├─── write
+     │    └─── Введите количество чисел: 
+     ├─── subroutine call
+     │    ├─── readln
+     │    └─── n
+     ├─── :=
+     │    ├─── i
+     │    └─── 1
+     ├─── for
+     │    ├─── i
+     │    ├─── 1
+     │    ├─── n
+     │    └─── block
+     │         ├─── subroutine call
+     │         │    ├─── write
+     │         │    ├─── Введите 
+     │         │    ├─── i
+     │         │    └─── -е число: 
+     │         ├─── subroutine call
+     │         │    ├─── readln
+     │         │    └─── ch
+     │         └─── if
+     │              ├─── <
+     │              │    ├─── max
+     │              │    └─── ch
+     │              └─── :=
+     │                   ├─── max
+     │                   └─── ch
+     └─── subroutine call
+          ├─── writeln
+          ├─── Самое большое число: 
+          └─── max
+var max	type integer
+var i	type integer
+var ch	type integer
+var n	type integer
+--------------------------
+	type integer
+	type string
+	type real
+	embedded write: writeln	
+	embedded write: write	
+	embedded read: readln	
+	embedded read: read	
+--------------------------

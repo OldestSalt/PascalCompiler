@@ -1,0 +1,7 @@
+procedure a(b: integer; c: real; const d: string);
+begin
+end;
+var n: integer;
+begin
+n := a(5, 1, 'string');
+end.

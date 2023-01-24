@@ -29,8 +29,11 @@
 						break;
 					case "-sym":
                         Parser.Nodes.Node symAst = parser.ParseProgram();
-						symAst.Sym(new Semantic.SymVisitor());
+						Semantic.SymVisitor sym = new Semantic.SymVisitor();
+						symAst.Sym(sym);
+						sym.Print();
                         symAst.Print(new Parser.Nodes.PrintVisitor());
+
 						break;
                     default:
 						ExceptionHandler.Throw(Exceptions.UnknownKeys);

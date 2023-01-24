@@ -206,9 +206,9 @@ namespace PascalCompiler.Parser.Nodes {
     public class NewFunction : NewDeclaration {
         public Identifier name;
         public SubroutineArgs args;
-        public Datatype returnType;
+        public BaseDatatype returnType;
         public SubroutineBody body;
-        public NewFunction(Identifier name, SubroutineArgs args, Datatype returnType, SubroutineBody body) {
+        public NewFunction(Identifier name, SubroutineArgs args, BaseDatatype returnType, SubroutineBody body) {
             this.name = name;
             this.args = args;
             this.returnType = returnType;

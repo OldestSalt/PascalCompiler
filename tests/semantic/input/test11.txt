@@ -1,6 +1,6 @@
 procedure a(var b: integer; out c: real; const d: string);
 begin
-d := 'mlem';
 end;
 begin
+a(10, 1.5, 'string');
 end.

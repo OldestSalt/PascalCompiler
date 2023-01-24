@@ -44,7 +44,7 @@
             }
         }
         public void VisitProgramName(ProgramName node, string indents = "") {
-            OutputHandler.WriteLine(node.name.lexeme.value);
+            OutputHandler.WriteLine(node.name.lexeme!.value!);
         }
         public void VisitDeclarationSection(DeclarationSection node, string indents = "") {
             if (node is Constants) VisitConstants(node as Constants, indents);
@@ -230,7 +230,7 @@
         }
         public void VisitArgModifier(ArgModifier node, string indents = "") {
             OutputHandler.WriteLine("arg modifier");
-            OutputHandler.Write(indents + "└─── " + node.value);
+            OutputHandler.WriteLine(indents + "└─── " + node.value);
         }
         public void VisitArraySubroutineArg(ArraySubroutineArg node, string indents = "") {
             OutputHandler.WriteLine("array arg");

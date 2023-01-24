@@ -1,13 +1,15 @@
 ﻿using PascalCompiler.Parser.Nodes;
 using PascalCompiler.Semantic.Symbols;
-using System.Security;
-using System.Xml.Linq;
 
 namespace PascalCompiler.Semantic {
     public class SymVisitor {
         private SymStack symStack;
         public SymVisitor() {
             symStack = new SymStack();
+        }
+
+        public void Print() {
+            symStack.Print();
         }
         public void VisitProgram(Program node) {
             symStack.pushSym(new SymTypeInteger("integer"));
@@ -135,7 +137,7 @@ namespace PascalCompiler.Semantic {
 
             symStack.pushScope();
 
-            VisitDatatype(node.returnType);
+            VisitBaseDatatype(node.returnType);
 
             symStack.pushSym(new SymVar(node.name.lexeme.value!, node.returnType.symType!));
 
@@ -508,7 +510,7 @@ namespace PascalCompiler.Semantic {
                 node.charNumber = ((SubroutineCall)node.name).charNumber;
             }
             
-            if (type is not SymTypeArray) {
+            if (type is not SymTypeArray && type!.name != "string") {
                 ExceptionHandler.Throw(Exceptions.NotAnArray, node.lineNumber, node.charNumber);
             }
 
@@ -603,6 +605,7 @@ namespace PascalCompiler.Semantic {
                     fields.pushSym(new SymVar(name.lexeme.value!, field.type.symType!));
                 }
             }
+            node.symType = new SymTypeRecord("record", fields);
         }
         public void VisitNewField(NewField node) { }
         public void VisitCompareOperator(CompareOperator node) { }

@@ -1,0 +1,9 @@
+procedure aaa();
+begin
+end;
+begin
+if a <> b then
+aaa
+else
+aaa
+end.

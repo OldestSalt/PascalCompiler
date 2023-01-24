@@ -1,0 +1,7 @@
+type a = integer;
+b = a;
+c = b;
+d = c;
+var n: d;
+begin
+end.

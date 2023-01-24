@@ -1,0 +1,55 @@
+program
+├─── optional block
+│    └─── var
+│         ├─── variable declaration
+│         │    ├─── arr
+│         │    └─── array
+│         │         ├─── datatype: integer
+│         │         ├─── ..
+│         │         │    ├─── 1
+│         │         │    └─── 2
+│         │         ├─── ..
+│         │         │    ├─── 1
+│         │         │    └─── 100
+│         │         └─── ..
+│         │              ├─── 1
+│         │              └─── 200
+│         └─── variable declaration
+│              ├─── a
+│              └─── record
+│                   ├─── field
+│                   │    ├─── field1
+│                   │    ├─── field2
+│                   │    └─── datatype: integer
+│                   └─── field
+│                        ├─── field3
+│                        └─── datatype: real
+└─── block
+     ├─── :=
+     │    ├─── record access
+     │    │    ├─── a
+     │    │    └─── field1
+     │    └─── 200
+     └─── :=
+          ├─── array access
+          │    ├─── arr
+          │    ├─── 2
+          │    ├─── 23
+          │    └─── 173
+          └─── record access
+               ├─── a
+               └─── field2
+var arr	array [1..2, 1..100, 1..200] of integer	type integer
+var a	record	
+	var field1	type integer
+	var field2	type integer
+	var field3	type real
+--------------------------
+	type integer
+	type string
+	type real
+	embedded write: writeln	
+	embedded write: write	
+	embedded read: readln	
+	embedded read: read	
+--------------------------
