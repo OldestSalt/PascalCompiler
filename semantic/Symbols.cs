@@ -1,4 +1,5 @@
-﻿using PascalCompiler.Parser.Nodes;
+﻿using PascalCompiler.Expressions;
+using PascalCompiler.Parser.Nodes;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Xml.Linq;
@@ -38,12 +39,11 @@ namespace PascalCompiler.Semantic.Symbols {
 
         public void Print(string indents = "") {
             foreach (DictionaryEntry sym in data) {
-                ((Symbol)sym.Value).Print(indents);
+                ((Symbol)sym.Value!).Print(indents);
             }
         }
 
     }
-
     public class SymStack {
         private Stack<SymTable> stack;
         public SymStack() {
@@ -93,6 +93,12 @@ namespace PascalCompiler.Semantic.Symbols {
                 symTable.Print(indents);
                 indents += "\t";
                 Console.WriteLine("--------------------------");
+            }
+        }
+
+        public void checkIdentifierDuplication(Lexer.Lexeme lexeme) {
+            if (checkSymInScope(lexeme.value!)) {
+                ExceptionHandler.Throw(Exceptions.DeclaredIdentifier, lexeme.lineNumber, lexeme.charNumber, lexeme.value!);
             }
         }
     }

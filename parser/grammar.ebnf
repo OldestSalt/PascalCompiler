@@ -38,8 +38,8 @@
 <simple_term> ::= {unary_operator} <factor>
 <factor> ::= ("(" <expression> ")") | <constant> | <reference> | <subroutine_call>
 <reference> ::= <identifier> | <array_access> | <record_access>
-<array_access> ::= (<reference> | <subroutine_call>) "[" <expression> {"," <expression>} "]"
-<record_access> ::= (<reference> | <subroutine_call>) "." <identifier>
+<array_access> ::= <reference> "[" <expression> {"," <expression>} "]"
+<record_access> ::= <reference> "." <identifier>
 
 <datatype> ::= <base_datatype> | <array_datatype> | <record_datatype>
 <base_datatype> ::= <identifier>

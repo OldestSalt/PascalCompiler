@@ -4,6 +4,34 @@ using PascalCompiler.Parser.Nodes;
 namespace PascalCompiler {
     public static class TestSystem {
         public static StringWriter? output = null;
+        public static List<string> getCorrect(string path) {
+            List<string>? correctOutput = null;
+
+            try {
+                correctOutput = File.ReadAllText(path).Split('\n').ToList();
+            }
+            catch (FileNotFoundException) {
+                ExceptionHandler.Throw(Exceptions.TestError);
+            }
+            return correctOutput!;
+        }
+        public static void Compare(List<string> output, List<string> correctOutput, string testFilename) {
+            bool isCorrect = true;
+
+            if (output!.Count != correctOutput.Count) {
+                Console.WriteLine($"Test file '{testFilename}':\tWrong answer!");
+                return;
+            }
+
+            for (int i = 0; i < correctOutput!.Count; i++) {
+                if (correctOutput[i] != output[i]) {
+                    Console.WriteLine($"Test file '{testFilename}':\tWrong answer! Expected:\n\t{correctOutput[i]}\nGot:\n\t{output[i]}");
+                    isCorrect = false;
+                    break;
+                }
+            }
+            if (isCorrect) Console.WriteLine($"Test file '{testFilename}':\tOK");
+        }
         public static void LexerTests() {
             foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/lexer/input").GetFiles()) {
                 output = new StringWriter();
@@ -21,14 +49,7 @@ namespace PascalCompiler {
 
                 }
 
-                List<string>? correctLexemeList = null;
-
-                try {
-                    correctLexemeList = File.ReadAllText($"{CommonConstants.ProjectPath}/tests/lexer/output/{file.Name}").Split('\n').ToList();
-                }
-                catch (FileNotFoundException) {
-                    ExceptionHandler.Throw(Exceptions.TestError);
-                }
+                List<string> correctLexemeList = getCorrect($"{CommonConstants.ProjectPath}/tests/lexer/output/{file.Name}");
 
                 StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
                 origin.AutoFlush = true;
@@ -37,21 +58,7 @@ namespace PascalCompiler {
                 List<string> lexemeList = output.ToString().Split('\n').ToList();
                 output = null;
 
-                bool isCorrect = true;
-
-                if (correctLexemeList!.Count != lexemeList.Count) {
-                    Console.WriteLine($"Test file '{file.Name}':\tWrong answer!");
-                    continue;
-                }
-
-                for (int i = 0; i < correctLexemeList!.Count; i++) {
-                    if (correctLexemeList[i] != lexemeList[i]) {
-                        Console.WriteLine($"Test file '{file.Name}':\tWrong answer! Expected:\n\t{correctLexemeList[i]}\nGot:\n\t{lexemeList[i]}");
-                        isCorrect = false;
-                        break;
-                    }
-                }
-                if (isCorrect) Console.WriteLine($"Test file '{file.Name}':\tOK");
+                Compare(lexemeList, correctLexemeList!, file.Name);
             }
         }
 
@@ -72,15 +79,7 @@ namespace PascalCompiler {
 
                 }
 
-                List<string>? correctASTlines = null;
-
-                try {
-                    correctASTlines = File.ReadAllText($"{CommonConstants.ProjectPath}/tests/expressions/output/{file.Name}").Split('\n').ToList();
-                }
-                catch (FileNotFoundException) {
-                    ExceptionHandler.Throw(Exceptions.TestError);
-                }
-
+                List<string> correctASTlines = getCorrect($"{CommonConstants.ProjectPath}/tests/expressions/output/{file.Name}");
                 StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
                 origin.AutoFlush = true;
                 Console.SetOut(origin);
@@ -88,21 +87,7 @@ namespace PascalCompiler {
                 List<string> ASTlines = output.ToString().Split('\n').ToList();
                 output = null;
 
-                bool isCorrect = true;
-
-                if (correctASTlines!.Count != ASTlines.Count) {
-                    Console.WriteLine($"Test file '{file.Name}':\tWrong answer!");
-                    continue;
-                }
-
-                for (int i = 0; i < correctASTlines!.Count; i++) {
-                    if (correctASTlines[i] != ASTlines[i]) {
-                        Console.WriteLine($"Test file '{file.Name}':\tWrong answer in line {i}!");
-                        isCorrect = false;
-                        break;
-                    }
-                }
-                if (isCorrect) Console.WriteLine($"Test file '{file.Name}':\tOK");
+                Compare(ASTlines, correctASTlines!, file.Name);
             }
         }
 
@@ -123,37 +108,17 @@ namespace PascalCompiler {
 
                 }
 
-                List<string>? correctASTlines = null;
+                List<string>? correctASTlines = getCorrect($"{CommonConstants.ProjectPath}/tests/parser/output/{file.Name}");
                 StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
                 origin.AutoFlush = true;
                 Console.SetOut(origin);
 
-                try {
-                    correctASTlines = File.ReadAllText($"{CommonConstants.ProjectPath}/tests/parser/output/{file.Name}").Split('\n').ToList();
-                }
-                catch (FileNotFoundException) {
-                    ExceptionHandler.Throw(Exceptions.TestError);
-                }
 
                 List<string> ASTlines = output.ToString().Split('\n').ToList();
                 output = null;
 
 
-                bool isCorrect = true;
-
-                if (correctASTlines!.Count != ASTlines.Count) {
-                    Console.WriteLine($"Test file '{file.Name}':\tWrong answer!");
-                    continue;
-                }
-
-                for (int i = 0; i < correctASTlines!.Count; i++) {
-                    if (correctASTlines[i] != ASTlines[i]) {
-                        Console.WriteLine($"Test file '{file.Name}':\tWrong answer in line {i}!");
-                        isCorrect = false;
-                        break;
-                    }
-                }
-                if (isCorrect) Console.WriteLine($"Test file '{file.Name}':\tOK");
+                Compare(ASTlines, correctASTlines!, file.Name);
             }
         }
 
@@ -177,37 +142,16 @@ namespace PascalCompiler {
                 catch {
 
                 }
-
-                List<string>? correctASTlines = null;
+                File.WriteAllText($"{CommonConstants.ProjectPath}/tests/semantic/output/{file.Name}", output.ToString());
+                List<string>? correctASTlines = getCorrect($"{CommonConstants.ProjectPath}/tests/semantic/output/{file.Name}");
                 StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
                 origin.AutoFlush = true;
                 Console.SetOut(origin);
 
-                try {
-                    correctASTlines = File.ReadAllText($"{CommonConstants.ProjectPath}/tests/semantic/output/{file.Name}").Split('\n').ToList();
-                }
-                catch (FileNotFoundException) {
-                    ExceptionHandler.Throw(Exceptions.TestError);
-                }
-
                 List<string> ASTlines = output.ToString().Split('\n').ToList();
                 output = null;
 
-                bool isCorrect = true;
-
-                if (correctASTlines!.Count != ASTlines.Count) {
-                    Console.WriteLine($"Test file '{file.Name}':\tWrong answer!");
-                    continue;
-                }
-
-                for (int i = 0; i < correctASTlines!.Count; i++) {
-                    if (correctASTlines[i] != ASTlines[i]) {
-                        Console.WriteLine($"Test file '{file.Name}':\tWrong answer in line {i}!");
-                        isCorrect = false;
-                        break;
-                    }
-                }
-                if (isCorrect) Console.WriteLine($"Test file '{file.Name}':\tOK");
+                Compare(ASTlines, correctASTlines!, file.Name);
             }
         }
     }

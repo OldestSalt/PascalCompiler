@@ -1,1 +1,43 @@
-Error detected at position 1, 1: Expected operand
+program
+├─── optional block
+│    ├─── procedures
+│    │    └─── procedure declaration
+│    │         ├─── a
+│    │         ├─── subroutine args
+│    │         │    ├─── arg
+│    │         │    │    ├─── b
+│    │         │    │    └─── datatype: integer
+│    │         │    ├─── arg
+│    │         │    │    ├─── c
+│    │         │    │    └─── datatype: real
+│    │         │    └─── arg
+│    │         │         ├─── arg modifier
+│    │         │         │    └─── const
+│    │         │         ├─── d
+│    │         │         └─── datatype: string
+│    │         └─── subroutine body
+│    │              └─── block
+│    └─── var
+│         └─── variable declaration
+│              ├─── n
+│              └─── datatype: integer
+└─── block
+     └─── subroutine call
+          ├─── a
+          ├─── 5
+          ├─── 1
+          └─── string
+procedure a	
+	param b	type integer
+	param c	type real
+	param CONST	d	type string
+var n	type integer
+--------------------------
+	type integer
+	type string
+	type real
+	embedded write: writeln	
+	embedded write: write	
+	embedded read: readln	
+	embedded read: read	
+--------------------------

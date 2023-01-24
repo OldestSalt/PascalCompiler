@@ -393,7 +393,7 @@ namespace PascalCompiler.Parser.Nodes {
 
     public class SubroutineCall : Statement {
         public Identifier name;
-        public List<Expression> args;
+        public List<Expression>? args;
         public SymType? symType;
         public uint lineNumber = 0, charNumber = 0;
         public SubroutineCall(Identifier name, List<Expression>? args) {
@@ -508,9 +508,9 @@ namespace PascalCompiler.Parser.Nodes {
     }
 
     public class ArrayAccess: Reference {
-        public Node name;
+        public Reference name;
         public List<Expression> indexes;
-        public ArrayAccess(Node name, List<Expression> indexes) {
+        public ArrayAccess(Reference name, List<Expression> indexes) {
             this.name = name;
             this.indexes = indexes;
         }
@@ -523,9 +523,9 @@ namespace PascalCompiler.Parser.Nodes {
     }
 
     public class RecordAccess : Reference {
-        public Node name;
+        public Reference name;
         public Identifier field;
-        public RecordAccess(Node name, Identifier field) {
+        public RecordAccess(Reference name, Identifier field) {
             this.name = name;
             this.field = field;
         }
@@ -655,6 +655,8 @@ namespace PascalCompiler.Parser.Nodes {
     public class Identifier : Reference {
         public Identifier(Lexer.Lexeme lexeme) {
             this.lexeme = lexeme;
+            lineNumber = lexeme.lineNumber;
+            charNumber = lexeme.charNumber;
         }
         public override void Print(PrintVisitor visitor) {
             visitor.VisitIdentifier(this);

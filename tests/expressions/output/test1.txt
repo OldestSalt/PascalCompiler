@@ -1,5 +1,44 @@
-*
-├─── 3
-└─── +
-     ├─── 5
-     └─── a
+program
+├─── optional block
+│    ├─── program name: aaa
+│    ├─── var
+│    │    ├─── variable declaration
+│    │    │    ├─── i
+│    │    │    └─── datatype: integer
+│    │    └─── variable declaration
+│    │         ├─── j
+│    │         └─── datatype: real
+│    └─── functions
+│         └─── procedure declaration
+│              ├─── sum
+│              ├─── subroutine args
+│              │    ├─── arg
+│              │    │    ├─── x
+│              │    │    └─── datatype: integer
+│              │    └─── arg
+│              │         ├─── y
+│              │         └─── datatype: integer
+│              ├─── datatype: integer
+│              └─── subroutine body
+│                   └─── block
+│                        └─── :=
+│                             ├─── sum
+│                             └─── +
+│                                  ├─── x
+│                                  └─── y
+└─── block
+var i	type integer
+var j	type real
+function sum	
+	param x	type integer
+	param y	type integer
+	type integer
+--------------------------
+	type integer
+	type string
+	type real
+	embedded write: writeln	
+	embedded write: write	
+	embedded read: readln	
+	embedded read: read	
+--------------------------

@@ -1,21 +1,6 @@
-program Maximum;
-var max: real;
-i: integer;
-ch: integer;
-n: integer;
-function a(var b: integer): real;
+function a(): integer;
 begin
 end;
 begin
-write('Введите количество чисел: ');
-readln();
-i:=1;
-for i:=1 to n do
-begin
-     write('Введите ',i,'-е число: ');
-     readln(ch);
-     if ch then max:= ch + a(ch);
-end;
-writeln('Самое большое число: ', max);
-a(ch);
+a()[1] := 0;
 end.

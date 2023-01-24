@@ -71,7 +71,7 @@ namespace PascalCompiler.Parser {
                     ExceptionHandler.Throw(Exceptions.UnknownError, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber);
                     break;
             }
-            return null;
+            return null!;
         }
 
         public Constants ParseConstants() {
@@ -86,13 +86,12 @@ namespace PascalCompiler.Parser {
             else {
                 return new Constants(constList);
             }
-            return null;
+            return null!;
         }
 
         public NewConstant ParseNewConstant() {
             Identifier constName = new Identifier(lexer.curLexeme!);
             BaseDatatype? constType = null;
-            Expression value = null;
             lexer.GetNextLexeme();
 
             if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.COLON) {
@@ -105,7 +104,7 @@ namespace PascalCompiler.Parser {
             }
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.EQUAL);
-            value = ParseExpression();
+            Expression value = ParseExpression();
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.SEMICOLON);
 
             return new NewConstant(constName, constType, value);
@@ -126,7 +125,6 @@ namespace PascalCompiler.Parser {
 
         public NewVariable ParseNewVariable() {
             List<Identifier> varNames = new List<Identifier>() { new Identifier(lexer.curLexeme!) };
-            Datatype varType = null;
             Expression? value = null;
             lexer.GetNextLexeme();
 
@@ -145,7 +143,7 @@ namespace PascalCompiler.Parser {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "datatype");
             }
 
-            varType = ParseDatatype();
+            Datatype varType = ParseDatatype();
 
             if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.EQUAL) {
                 if (varNames.Count > 1) {
@@ -176,7 +174,6 @@ namespace PascalCompiler.Parser {
 
         public NewType ParseNewType() {
             Identifier newTypeName = new Identifier(lexer.curLexeme!);
-            Datatype oldTypeName = null;
             lexer.GetNextLexeme();
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.EQUAL);
 
@@ -184,7 +181,7 @@ namespace PascalCompiler.Parser {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "datatype");
             }
 
-            oldTypeName = ParseDatatype();
+            Datatype oldTypeName = ParseDatatype();
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.SEMICOLON);
 
             return new NewType(newTypeName, oldTypeName);
@@ -201,24 +198,21 @@ namespace PascalCompiler.Parser {
         }
 
         public NewProcedure ParseNewProcedure() {
-            Identifier procName = null;
-            SubroutineArgs args = null;
-            SubroutineBody body = null;
             lexer.GetNextLexeme();
 
             if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "procedure name");
             }
-            procName = new Identifier(lexer.curLexeme!);
+            Identifier procName = new Identifier(lexer.curLexeme!);
             lexer.GetNextLexeme();
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.LEFT_ROUND_BRACKET);
-            args = ParseSubroutineArgs(false);
+            SubroutineArgs args = ParseSubroutineArgs(false);
 
             if (!(new CommonConstants.ServiceWords[] { CommonConstants.ServiceWords.CONST, CommonConstants.ServiceWords.VAR, CommonConstants.ServiceWords.TYPE, CommonConstants.ServiceWords.BEGIN }).Contains(lexer.curLexeme!.subtype)) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "procedure body");
             }
 
-            body = ParseSubroutineBody();
+            SubroutineBody body = ParseSubroutineBody();
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.SEMICOLON);
 
             return new NewProcedure(procName, args, body);
@@ -252,10 +246,10 @@ namespace PascalCompiler.Parser {
         public NewSubroutineArg ParseNewSubroutineArg() {
             ArgModifier? mod = null;
             List<Identifier> argNames = new List<Identifier>();
-            Node type = null;
+            Node type = null!;
 
             if ((new CommonConstants.ServiceWords[] { CommonConstants.ServiceWords.CONST, CommonConstants.ServiceWords.VAR, CommonConstants.ServiceWords.OUT }).Contains(lexer.curLexeme!.subtype)) {
-                mod = new ArgModifier(lexer.curLexeme!.value);
+                mod = new ArgModifier(lexer.curLexeme!.value!);
                 lexer.GetNextLexeme();
             }
 
@@ -293,7 +287,6 @@ namespace PascalCompiler.Parser {
         }
 
         public ArraySubroutineArg ParseArraySubroutineArg() {
-            BaseDatatype type = null;
             lexer.GetNextLexeme();
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.OF);
@@ -302,14 +295,13 @@ namespace PascalCompiler.Parser {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "datatype");
             }
 
-            type = new BaseDatatype(new Identifier(lexer.curLexeme!));
+            BaseDatatype type = new BaseDatatype(new Identifier(lexer.curLexeme!));
 
             return new ArraySubroutineArg(type);
         }
 
         public SubroutineBody ParseSubroutineBody() {
             List<DeclarationSection>? decls = new List<DeclarationSection>();
-            Block body = null;
 
             while ((new CommonConstants.ServiceWords[] { CommonConstants.ServiceWords.CONST, CommonConstants.ServiceWords.VAR, CommonConstants.ServiceWords.TYPE }).Contains(lexer.curLexeme!.subtype)) {
                 if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.CONST) {
@@ -325,7 +317,7 @@ namespace PascalCompiler.Parser {
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.BEGIN);
 
-            body = ParseBlock();
+            Block body = ParseBlock();
 
             return new SubroutineBody(decls, body);
         }
@@ -339,28 +331,25 @@ namespace PascalCompiler.Parser {
         }
 
         public NewFunction ParseNewFunction() {
-            Identifier funcName = null;
-            SubroutineArgs args = null;
-            BaseDatatype returnType = null;
-            SubroutineBody body = null;
             lexer.GetNextLexeme();
 
             if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "function name");
             }
 
-            funcName = new Identifier(lexer.curLexeme!);
+            Identifier funcName = new Identifier(lexer.curLexeme!);
 
             lexer.GetNextLexeme();
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.LEFT_ROUND_BRACKET);
 
-            args = ParseSubroutineArgs(true);
+            SubroutineArgs args = ParseSubroutineArgs(true);
 
             if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "return datatype");
             }
-            returnType = new BaseDatatype(new Identifier(lexer.curLexeme!));
+            BaseDatatype returnType = new BaseDatatype(new Identifier(lexer.curLexeme!));
+            lexer.GetNextLexeme();
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.SEMICOLON);
 
@@ -368,7 +357,7 @@ namespace PascalCompiler.Parser {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "function body");
             }
 
-            body = ParseSubroutineBody();
+            SubroutineBody body = ParseSubroutineBody();
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.SEMICOLON);
 
@@ -416,33 +405,31 @@ namespace PascalCompiler.Parser {
                 return ParseBlock();
             }
             else if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                Node node = ParseStatementStartingWithIdentifier();
+                Node node = ParseReferenceOrSubroutineCall();
 
                 if (node is SubroutineCall) {
-                    return node as SubroutineCall;
+                    return (SubroutineCall)node;
                 }
                 else if (node is Identifier && (new CommonConstants.ServiceWords[] { CommonConstants.ServiceWords.SEMICOLON, CommonConstants.ServiceWords.END, CommonConstants.ServiceWords.UNTIL, CommonConstants.ServiceWords.ELSE }).Contains(lexer.curLexeme!.subtype)) {
-                    return new SubroutineCall(node as Identifier, null);
+                    return new SubroutineCall((Identifier)node, null);
                 }
                 else {
-                    return ParseAssignmentStatement(node as Reference);
+                    return ParseAssignmentStatement((Reference)node);
                 }
             }
 
             ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "statement");
 
-            return null;
+            return null!;
         }
 
-        public Node ParseStatementStartingWithIdentifier() {
+        public Node ParseReferenceOrSubroutineCall() {
             Identifier name = new Identifier(lexer.curLexeme!);
-            List<Expression> args = new List<Expression>();
-            bool isSubroutine = false;
             lexer.GetNextLexeme();
 
             if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.LEFT_ROUND_BRACKET) {
-                isSubroutine = true;
                 lexer.GetNextLexeme();
+                List<Expression> args = new List<Expression>();
                 while (lexer.curLexeme!.subtype != CommonConstants.ServiceWords.RIGHT_ROUND_BRACKET) {
                     args.Add(ParseExpression(true));
                     if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.COMMA) lexer.GetNextLexeme();
@@ -450,54 +437,11 @@ namespace PascalCompiler.Parser {
                         ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, ")");
                     }
                 }
-
                 lexer.GetNextLexeme();
-            }
-
-            if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.LEFT_SQUARE_BRACKET) {
-                lexer.GetNextLexeme();
-                List<Expression> indexes = new List<Expression>() { ParseExpression() };
-
-                while (lexer.curLexeme!.subtype != CommonConstants.ServiceWords.RIGHT_SQUARE_BRACKET) {
-                    if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.COMMA) lexer.GetNextLexeme();
-                    else if (lexer.curLexeme!.subtype != CommonConstants.ServiceWords.RIGHT_SQUARE_BRACKET) {
-                        ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "]");
-                    }
-                    indexes.Add(ParseExpression());
-                }
-                lexer.GetNextLexeme();
-
-                if (isSubroutine) {
-                    return new ArrayAccess(new SubroutineCall(name, args), indexes);
-                }
-                else {
-                    return new ArrayAccess(name, indexes);
-                }
-            }
-            else if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.POINT) {
-                if (lexer.GetNextLexeme()!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
-                    ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "field name");
-                }
-
-                Identifier field = new Identifier(lexer.curLexeme!);
-                lexer.GetNextLexeme();
-
-                if (isSubroutine) {
-                    return new RecordAccess(new SubroutineCall(name, args), field);
-                }
-                else {
-                    return new RecordAccess(name, field);
-                }
-            }
-            else if (isSubroutine) {
                 return new SubroutineCall(name, args);
             }
-            else {
-                return name;
-            }
-        }
 
-        public Node ParseReferenceOrSubroutineCall(Node reference) {
+            Reference reference = name;
             while (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.POINT || lexer.curLexeme!.subtype == CommonConstants.ServiceWords.LEFT_SQUARE_BRACKET) {
                 if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.POINT) {
                     lexer.GetNextLexeme();
@@ -507,7 +451,7 @@ namespace PascalCompiler.Parser {
 
                     Identifier field = new Identifier(lexer.curLexeme!);
                     lexer.GetNextLexeme();
-                    reference =  new RecordAccess(reference, field);
+                    reference =  new RecordAccess(name, field);
                 }
                 else {
                     lexer.GetNextLexeme();
@@ -532,17 +476,15 @@ namespace PascalCompiler.Parser {
         }
 
         public IfStatement ParseIfStatement() {
-            Expression condition = null;
-            Statement trueStatement = null;
             Statement? falseStatement = null;
 
             lexer.GetNextLexeme();
 
-            condition = ParseExpression();
+            Expression condition = ParseExpression();
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.THEN);
 
-            trueStatement = ParseStatement();
+            Statement trueStatement = ParseStatement();
 
             if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.ELSE) {
                 lexer.GetNextLexeme();
@@ -553,23 +495,20 @@ namespace PascalCompiler.Parser {
         }
 
         public WhileStatement ParseWhileStatement() {
-            Expression condition = null;
-            Statement body = null;
 
             lexer.GetNextLexeme();
 
-            condition = ParseExpression();
+            Expression condition = ParseExpression();
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.DO);
 
-            body = ParseStatement();
+            Statement body = ParseStatement();
 
             return new WhileStatement(condition, body);
         }
 
         public RepeatStatement ParseRepeatStatement() {
             List<Statement> statements = new List<Statement>();
-            Expression condition = null;
 
             lexer.GetNextLexeme();
 
@@ -585,51 +524,41 @@ namespace PascalCompiler.Parser {
             }
             lexer.GetNextLexeme();
 
-            condition = ParseExpression();
+            Expression condition = ParseExpression();
 
             return new RepeatStatement(condition, statements);
         }
 
         public ForStatement ParseForStatement() {
-            Identifier counter = null;
-            Expression start = null;
-            Lexer.Lexeme direction = null;
-            Expression end = null;
-            Statement body = null;
-
             lexer.GetNextLexeme();
 
             if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.IDENTIFIER) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "counter name");
             }
-            counter = new Identifier(lexer.curLexeme!);
+            Identifier counter = new Identifier(lexer.curLexeme!);
             lexer.GetNextLexeme();
 
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.ASSIGN);
-            start = ParseExpression();
+            Expression start = ParseExpression();
 
             if (lexer.curLexeme!.subtype != CommonConstants.ServiceWords.TO && lexer.curLexeme!.subtype != CommonConstants.ServiceWords.DOWNTO) {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "to / downto");
             }
-            direction = lexer.curLexeme!;
+            Lexer.Lexeme direction = lexer.curLexeme!;
             lexer.GetNextLexeme();
 
-            end = ParseExpression();
+            Expression end = ParseExpression();
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.DO);
 
-            body = ParseStatement();
+            Statement body = ParseStatement();
 
             return new ForStatement(counter, start, direction, end, body);
         }
 
-        public AssignmentStatement ParseAssignmentStatement(Node reference) {
-            Node leftPart = ParseReferenceOrSubroutineCall(reference);
-            if (leftPart is SubroutineCall) {
-                ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "variable, array access or record access");
-            }
+        public AssignmentStatement ParseAssignmentStatement(Reference reference) {
             ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.ASSIGN);
 
-            return new AssignmentStatement((Reference)leftPart, ParseExpression());
+            return new AssignmentStatement(reference, ParseExpression());
         }
 
         public Datatype ParseDatatype() {
@@ -644,7 +573,7 @@ namespace PascalCompiler.Parser {
             else if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.RECORD) {
                 return ParseRecordDatatype();
             }
-            return null;
+            return null!;
         }
 
         public ArrayDatatype ParseArrayDatatype() {
@@ -653,17 +582,13 @@ namespace PascalCompiler.Parser {
             }
 
             List<Nodes.Index> indexes = new List<Nodes.Index>();
-            Datatype type = null;
 
             lexer.GetNextLexeme();
             do {
-                Constant start = null;
-                Constant end = null;
-
                 if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.INTEGER) {
                     ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "start index");
                 }
-                start = new Constant(lexer.curLexeme!);
+                Constant start = new Constant(lexer.curLexeme!);
                 lexer.GetNextLexeme();
 
                 ParserUtils.RequireLexeme(lexer, CommonConstants.ServiceWords.ELLIPSIS);
@@ -671,7 +596,7 @@ namespace PascalCompiler.Parser {
                 if (lexer.curLexeme!.type != Lexer.Constants.LexemeType.INTEGER) {
                     ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "start index");
                 }
-                end = new Constant(lexer.curLexeme!);
+                Constant end = new Constant(lexer.curLexeme!);
                 lexer.GetNextLexeme();
 
                 indexes.Add(new Nodes.Index(start, end));
@@ -689,7 +614,7 @@ namespace PascalCompiler.Parser {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "array datatype");
             }
 
-            type = ParseDatatype();
+            Datatype type = ParseDatatype();
 
             return new ArrayDatatype(type, indexes);
         }
@@ -716,7 +641,6 @@ namespace PascalCompiler.Parser {
 
         public NewField ParseNewField() {
             List<Identifier> names = new List<Identifier>() { new Identifier(lexer.curLexeme!) };
-            Datatype type = null;
 
             lexer.GetNextLexeme();
 
@@ -736,7 +660,7 @@ namespace PascalCompiler.Parser {
                 ExceptionHandler.Throw(Exceptions.ExpectedCharacters, lexer.curLexeme!.lineNumber, lexer.curLexeme!.charNumber, "field datatype");
             }
 
-            type = ParseDatatype();
+            Datatype type = ParseDatatype();
 
             return new NewField(names, type);
         }
@@ -802,7 +726,7 @@ namespace PascalCompiler.Parser {
         }
 
         public Factor ParseFactor() {
-            Node value = null;
+            Node value = null!;
 
             if ((new Lexer.Constants.LexemeType[] { Lexer.Constants.LexemeType.REAL, Lexer.Constants.LexemeType.STRING, Lexer.Constants.LexemeType.INTEGER }).Contains(lexer.curLexeme!.type)) {
                 value = new Constant(lexer.curLexeme!);
@@ -810,7 +734,7 @@ namespace PascalCompiler.Parser {
                 lexer.GetNextLexeme();
             }
             else if (lexer.curLexeme!.type == Lexer.Constants.LexemeType.IDENTIFIER) {
-                value = ParseReferenceOrSubroutineCall(ParseStatementStartingWithIdentifier());
+                value = ParseReferenceOrSubroutineCall();
             }
             else if (lexer.curLexeme!.subtype == CommonConstants.ServiceWords.LEFT_ROUND_BRACKET) {
                 lexer.GetNextLexeme();

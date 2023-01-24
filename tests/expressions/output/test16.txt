@@ -1,0 +1,34 @@
+program
+├─── optional block
+│    ├─── type
+│    │    ├─── type declaration
+│    │    │    ├─── a
+│    │    │    └─── datatype: integer
+│    │    ├─── type declaration
+│    │    │    ├─── b
+│    │    │    └─── datatype: a
+│    │    ├─── type declaration
+│    │    │    ├─── c
+│    │    │    └─── datatype: b
+│    │    └─── type declaration
+│    │         ├─── d
+│    │         └─── datatype: c
+│    └─── var
+│         └─── variable declaration
+│              ├─── n
+│              └─── datatype: d
+└─── block
+alias a = type integer
+alias b = type integer
+alias c = type integer
+alias d = type integer
+var n	type integer
+--------------------------
+	type integer
+	type string
+	type real
+	embedded write: writeln	
+	embedded write: write	
+	embedded read: readln	
+	embedded read: read	
+--------------------------

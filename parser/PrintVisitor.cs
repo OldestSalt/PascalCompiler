@@ -47,11 +47,11 @@
             OutputHandler.WriteLine(node.name.lexeme!.value!);
         }
         public void VisitDeclarationSection(DeclarationSection node, string indents = "") {
-            if (node is Constants) VisitConstants(node as Constants, indents);
-            else if (node is Variables) VisitVariables(node as Variables, indents);
-            else if (node is Types) VisitTypes(node as Types, indents);
-            else if (node is Procedures) VisitProcedures(node as Procedures, indents);
-            else VisitFunctions(node as Functions, indents);
+            if (node is Constants) VisitConstants((Constants)node, indents);
+            else if (node is Variables) VisitVariables((Variables)node, indents);
+            else if (node is Types) VisitTypes((Types)node, indents);
+            else if (node is Procedures) VisitProcedures((Procedures)node, indents);
+            else VisitFunctions((Functions)node, indents);
         }
         public void VisitConstants(Constants node, string indents = "") {
             OutputHandler.WriteLine("const");
@@ -221,11 +221,11 @@
 
             if (node.type is BaseDatatype) {
                 OutputHandler.Write(indents + "└─── ");
-                VisitBaseDatatype(node.type as BaseDatatype, indents + "     ");
+                VisitBaseDatatype((BaseDatatype)node.type, indents + "     ");
             }
             else {
                 OutputHandler.Write(indents + "└─── ");
-                VisitArraySubroutineArg(node.type as ArraySubroutineArg, indents + "     ");
+                VisitArraySubroutineArg((ArraySubroutineArg)node.type, indents + "     ");
             }
         }
         public void VisitArgModifier(ArgModifier node, string indents = "") {
@@ -238,29 +238,29 @@
             VisitBaseDatatype(node.type, indents + "     ");
         }
         public void VisitStatement(Statement node, string indents = "") {
-            if (node is EmptyStatement) VisitEmptyStatement(node as EmptyStatement, indents);
-            else if (node is AssignmentStatement) VisitAssignmentStatement(node as AssignmentStatement, indents);
-            else if (node is IfStatement) VisitIfStatement(node as IfStatement, indents);
-            else if (node is WhileStatement) VisitWhileStatement(node as WhileStatement, indents);
-            else if (node is RepeatStatement) VisitRepeatStatement(node as RepeatStatement, indents);
-            else if (node is ForStatement) VisitForStatement(node as ForStatement, indents);
-            else if (node is Block) VisitBlock(node as Block, indents);
-            else VisitSubroutineCall(node as SubroutineCall, indents);
+            if (node is EmptyStatement) VisitEmptyStatement((EmptyStatement)node, indents);
+            else if (node is AssignmentStatement) VisitAssignmentStatement((AssignmentStatement)node, indents);
+            else if (node is IfStatement) VisitIfStatement((IfStatement)node, indents);
+            else if (node is WhileStatement) VisitWhileStatement((WhileStatement)node, indents);
+            else if (node is RepeatStatement) VisitRepeatStatement((RepeatStatement)node, indents);
+            else if (node is ForStatement) VisitForStatement((ForStatement)node, indents);
+            else if (node is Block) VisitBlock((Block)node, indents);
+            else VisitSubroutineCall((SubroutineCall)node, indents);
         }
         public void VisitAssignmentStatement(AssignmentStatement node, string indents = "") {
             OutputHandler.WriteLine(":=");
 
             if (node.leftPart is ArrayAccess) {
                 OutputHandler.Write(indents + "├─── ");
-                VisitArrayAccess(node.leftPart as ArrayAccess, indents + "│    ");
+                VisitArrayAccess((ArrayAccess)node.leftPart, indents + "│    ");
             }
             else if (node.leftPart is RecordAccess) {
                 OutputHandler.Write(indents + "├─── ");
-                VisitRecordAccess(node.leftPart as RecordAccess, indents + "│    ");
+                VisitRecordAccess((RecordAccess)node.leftPart, indents + "│    ");
             }
             else {
                 OutputHandler.Write(indents + "├─── ");
-                VisitIdentifier(node.leftPart as Identifier, indents + "│    ");
+                VisitIdentifier((Identifier)node.leftPart, indents + "│    ");
             }
 
             OutputHandler.Write(indents + "└─── ");
@@ -354,7 +354,7 @@
         }
         public void VisitExpression(Expression node, string indents = "") {
             if (node.compareOperator != null) {
-                OutputHandler.WriteLine(node.compareOperator.lexeme.value);
+                OutputHandler.WriteLine(node.compareOperator.lexeme!.value!);
 
                 OutputHandler.Write(indents + "├─── ");
                 VisitSimpleExpression(node.leftComparingOperand, indents + "│    ");
@@ -368,7 +368,7 @@
         }
         public void VisitSimpleExpression(SimpleExpression node, string indents = "") {
             if (node.addOperator != null) {
-                OutputHandler.WriteLine(node.addOperator.lexeme.value);
+                OutputHandler.WriteLine(node.addOperator.lexeme!.value!);
 
                 OutputHandler.Write(indents + "├─── ");
                 VisitSimpleExpression(node.left!, indents + "│    ");
@@ -382,7 +382,7 @@
         }
         public void VisitTerm(Term node, string indents = "") {
             if (node.multiplyOperator != null) {
-                OutputHandler.WriteLine(node.multiplyOperator.lexeme.value);
+                OutputHandler.WriteLine(node.multiplyOperator.lexeme!.value!);
 
                 OutputHandler.Write(indents + "├─── ");
                 VisitTerm(node.left!, indents + "│    ");
@@ -409,27 +409,21 @@
             }
         }
         public void VisitFactor(Factor node, string indents = "") {
-            if (node.value is Expression) VisitExpression(node.value as Expression, indents);
-            else if (node.value is Reference) VisitReference(node.value as Reference, indents);
-            else if (node.value is Constant) VisitConstant(node.value as Constant, indents);
-            else VisitSubroutineCall(node.value as SubroutineCall, indents);
+            if (node.value is Expression) VisitExpression((Expression)node.value, indents);
+            else if (node.value is Reference) VisitReference((Reference)node.value, indents);
+            else if (node.value is Constant) VisitConstant((Constant)node.value, indents);
+            else VisitSubroutineCall((SubroutineCall)node.value, indents);
         }
         public void VisitReference(Reference node, string indents = "") {
-            if (node is ArrayAccess) VisitArrayAccess(node as ArrayAccess, indents);
-            else if (node is RecordAccess) VisitRecordAccess(node as RecordAccess, indents);
-            else VisitIdentifier(node as Identifier, indents);
+            if (node is ArrayAccess) VisitArrayAccess((ArrayAccess)node, indents);
+            else if (node is RecordAccess) VisitRecordAccess((RecordAccess)node, indents);
+            else VisitIdentifier((Identifier)node, indents);
         }
         public void VisitArrayAccess(ArrayAccess node, string indents = "") {
             OutputHandler.WriteLine("array access");
 
-            if (node.name is Reference) {
-                OutputHandler.Write(indents + "├─── ");
-                VisitReference(node.name as Reference, indents + "│    ");
-            }
-            else {
-                OutputHandler.Write(indents + "├─── ");
-                VisitSubroutineCall(node.name as SubroutineCall, indents + "│    ");
-            }
+            OutputHandler.Write(indents + "├─── ");
+            VisitReference(node.name, indents + "│    ");
 
             for (int i = 0; i < node.indexes.Count - 1; i++) {
                 OutputHandler.Write(indents + "├─── ");
@@ -442,14 +436,8 @@
         public void VisitRecordAccess(RecordAccess node, string indents = "") {
             OutputHandler.WriteLine("record access");
 
-            if (node.name is Reference) {
-                OutputHandler.Write(indents + "├─── ");
-                VisitReference(node.name as Reference, indents + "│    ");
-            }
-            else {
-                OutputHandler.Write(indents + "├─── ");
-                VisitSubroutineCall(node.name as SubroutineCall, indents + "│    ");
-            }
+            OutputHandler.Write(indents + "├─── ");
+            VisitReference(node.name, indents + "│    ");
 
             OutputHandler.Write(indents + "└─── ");
             VisitIdentifier(node.field, indents + "     ");
