@@ -1,1 +1,5 @@
-Error detected at position 9, 8: Incorrect parameters
+-
+├─── -
+│    ├─── 1
+│    └─── 2
+└─── 3

@@ -166,7 +166,7 @@
             VisitNewFunction(node.functions.Last(), indents + "     ");
         }
         public void VisitNewFunction(NewFunction node, string indents = "") {
-            OutputHandler.WriteLine("procedure declaration");
+            OutputHandler.WriteLine("function declaration");
 
             OutputHandler.Write(indents + "├─── ");
             VisitIdentifier(node.name, indents + "│    ");

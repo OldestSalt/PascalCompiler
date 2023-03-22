@@ -78,7 +78,7 @@ namespace PascalCompiler {
                 catch {
 
                 }
-
+                
                 List<string> correctASTlines = getCorrect($"{CommonConstants.ProjectPath}/tests/expressions/output/{file.Name}");
                 StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
                 origin.AutoFlush = true;
@@ -142,7 +142,7 @@ namespace PascalCompiler {
                 catch {
 
                 }
-                File.WriteAllText($"{CommonConstants.ProjectPath}/tests/semantic/output/{file.Name}", output.ToString());
+
                 List<string>? correctASTlines = getCorrect($"{CommonConstants.ProjectPath}/tests/semantic/output/{file.Name}");
                 StreamWriter origin = new StreamWriter(Console.OpenStandardOutput());
                 origin.AutoFlush = true;

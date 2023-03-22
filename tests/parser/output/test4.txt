@@ -9,7 +9,7 @@ program
 │    │         ├─── j
 │    │         └─── datatype: real
 │    └─── functions
-│         └─── procedure declaration
+│         └─── function declaration
 │              ├─── sum
 │              ├─── subroutine args
 │              │    ├─── arg

@@ -1,1 +1,0 @@
-Error detected at position 5, 20: Incompatible types: expected 'string'; got 'integer'
