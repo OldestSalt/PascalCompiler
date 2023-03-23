@@ -6,10 +6,11 @@ namespace PascalCompiler.Parser {
         Lexer.Lexer lexer;
         public Parser(Lexer.Lexer lexer) {
             this.lexer = lexer;
-            lexer.GetNextLexeme();
+            //lexer.GetNextLexeme();
         }
 
         public Program ParseProgram() {
+            lexer.GetNextLexeme();
             OptionalBlock? optBlock = ParseOptionalBlock();
             lexer.GetNextLexeme();
             Program node = new Program(optBlock, ParseBlock());
