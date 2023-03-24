@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PascalCompiler.Lexer {
+﻿namespace PascalCompiler.Lexer {
     public class StateMachine {
         protected StreamHandler streamHandler;
         protected Dictionary<int, Dictionary<HashSet<char>, int>> rules;

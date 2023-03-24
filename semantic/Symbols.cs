@@ -232,13 +232,6 @@ namespace PascalCompiler.Semantic.Symbols {
         }
     }
 
-    //public class SymOverloadingParam : Symbol {
-    //    public List<SymType> types;
-    //    public SymOverloadingParam(string name, List<SymType> types) : base(name) {
-    //        this.types = types;
-    //    }
-    //}
-
     public class SymWrite : Symbol {
         public SymWrite(string name) : base(name) { }
         public override void Print(string indents = "") {

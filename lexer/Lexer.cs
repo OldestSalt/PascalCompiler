@@ -32,7 +32,7 @@
             uint charNumber = streamHandler.charNumber;
             
             if (!IsEOF()) {
-                if (Char.IsLetter(nextChar)) {
+                if (nextChar >= 'A' && nextChar <= 'Z' || nextChar >= 'a' && nextChar <= 'z') {
                     nextLexeme = identifierReservedWordSM.GetNextLexeme();
                 }
                 else if (Char.IsDigit(nextChar) || Constants.ModifierChars.Contains(nextChar)) {

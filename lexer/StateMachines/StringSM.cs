@@ -1,39 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualBasic;
+﻿using System.Text;
 
 namespace PascalCompiler.Lexer {
     public class StringSM: StateMachine {
-        private readonly int[] endStates = new int[2] { 6, 7 };
+        private enum states {
+            OTHER,
+            START,
+            EXPECT_CHAR,
+            EXPECT_SHARP_OR_QUOTE,
+            EXPECT_INT,
+            INT,
+            EXCEPTION,
+            END
+        }
+        private readonly states[] endStates = new states[2] { states.EXCEPTION, states.END };
         public StringSM(StreamHandler sh) : base(sh) {
             rules = new Dictionary<int, Dictionary<HashSet<char>, int>> {
-                { 1, new Dictionary<HashSet<char>, int> {
-                        { new HashSet<char> { '\'' }, 2 },
-                        { new HashSet<char> { '#' }, 4 }
+                { (int)states.START, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '\'' }, (int)states.EXPECT_CHAR },
+                        { new HashSet<char> { '#' }, (int)states.EXPECT_INT}
                     }
                 },
-                { 2, new Dictionary<HashSet<char>, int> {
-                        { new HashSet<char> { '\n', '\r', '\0' }, 6 },
-                        { new HashSet<char> { '\'' }, 3 }
+                { (int)states.EXPECT_CHAR, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '\n', '\r', '\0' }, (int)states.EXCEPTION },
+                        { new HashSet<char> { '\'' }, (int)states.EXPECT_SHARP_OR_QUOTE }
                     }
                 },
-                { 3, new Dictionary<HashSet<char>, int> {
-                        { new HashSet<char> { '\'' }, 2 },
-                        { new HashSet<char> { '#' }, 4 }
+                { (int)states.EXPECT_SHARP_OR_QUOTE, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '\'' }, (int)states.EXPECT_CHAR },
+                        { new HashSet<char> { '#' }, (int)states.EXPECT_INT }
                     }
                 },
-                { 4, new Dictionary<HashSet<char>, int> {
-                        { Constants.Digits, 5 },
-                        { Constants.ModifierChars, 5 }
+                { (int)states.EXPECT_INT, new Dictionary<HashSet<char>, int> {
+                        { Constants.Digits, (int)states.INT },
+                        { Constants.ModifierChars, (int)states.INT }
                     }
                 },
-                { 5, new Dictionary<HashSet<char>, int> {
-                        { Constants.Digits, 5 },
-                        { new HashSet<char> { '#' }, 4 },
-                        { new HashSet<char> { '\'' }, 2 }
+                { (int)states.INT, new Dictionary<HashSet<char>, int> {
+                        { Constants.Digits, (int)states.INT },
+                        { new HashSet<char> { '#' }, (int)states.EXPECT_INT },
+                        { new HashSet<char> { '\'' }, (int)states.EXPECT_CHAR }
                     }
                 }
             };
@@ -41,73 +46,82 @@ namespace PascalCompiler.Lexer {
 
         public Lexeme GetNextLexeme(Lexer lexer) {
             var newLexeme = new Lexeme();
-            var curState = 1;
+            states curState = states.START;
             var foundString = new StringBuilder();
             var rawLexeme = new StringBuilder();
             char peekedChar;
 
             while (!endStates.Contains(curState)) {
                 peekedChar = streamHandler.Peek();
-                int nextState = getNextState(curState, peekedChar);
-
-                if (curState == 1) {
-                    curState = nextState;
-                    rawLexeme.Append(peekedChar);
-                    streamHandler.GetChar();
-                }
-                else if (curState == 2) {
-                    curState = nextState == 0 ? curState : nextState;
-
-                    if (nextState == 0) {
-                        rawLexeme.Append(peekedChar);
-                        foundString.Append(streamHandler.GetChar());
-                    }
-                    else if (nextState == 6 || nextState == 3) {
+                states nextState = (states)getNextState((int)curState, peekedChar);
+                switch (curState) {
+                    case states.START:
+                        curState = nextState;
                         rawLexeme.Append(peekedChar);
                         streamHandler.GetChar();
-                    }
-                }
-                else if (curState == 3) {
-                    curState = nextState == 0 ? 7 : nextState;
-
-                    if (nextState == 2)  {
-                        rawLexeme.Append(peekedChar);
-                        foundString.Append(streamHandler.GetChar());
-                    }
-                    else if (nextState == 4) {
-                        rawLexeme.Append(peekedChar);
-                        streamHandler.GetChar();
-                    }
-                }
-                else if (curState == 4) {
-                    curState = nextState == 0 ? 6 : nextState;
-                }
-                else if (curState == 5) {
-                    NumberSM numberSM = new NumberSM(streamHandler);
-                    Lexeme? charCodeLexeme = numberSM.GetNextLexeme(lexer);
-
-                    if (charCodeLexeme == null || charCodeLexeme.value == null || charCodeLexeme.type != Constants.LexemeType.INTEGER || uint.Parse(charCodeLexeme.value) > Constants.MAX_CHARACTER_NUMBER) {
-                        curState = 6;
                         break;
-                    }
+                    case states.EXPECT_CHAR:
+                        curState = nextState == states.OTHER ? curState : nextState;
 
-                    foundString.Append((char)uint.Parse(charCodeLexeme.value));
-                    rawLexeme.Append(charCodeLexeme.raw);
+                        switch (nextState) {
+                            case states.OTHER:
+                                rawLexeme.Append(peekedChar);
+                                foundString.Append(streamHandler.GetChar());
+                                break;
+                            case states.EXCEPTION:
+                            case states.EXPECT_SHARP_OR_QUOTE:
+                                rawLexeme.Append(peekedChar);
+                                streamHandler.GetChar();
+                                break;
+                        }
+                        break;
+                    case states.EXPECT_SHARP_OR_QUOTE:
+                        curState = nextState == states.OTHER ? states.END : nextState;
 
-                    peekedChar = streamHandler.Peek();
-                    nextState = getNextState(curState, peekedChar);
-                    curState = nextState == 0 ? 7 : nextState;
-                    if (nextState == 4 || nextState == 2) {
-                        rawLexeme.Append(peekedChar);
-                        streamHandler.GetChar();
-                    }
+                        switch (nextState) {
+                            case states.EXPECT_CHAR:
+                                rawLexeme.Append(peekedChar);
+                                foundString.Append(streamHandler.GetChar());
+                                break;
+                            case states.EXPECT_INT:
+                                rawLexeme.Append(peekedChar);
+                                streamHandler.GetChar();
+                                break;
+                        }
+                        break;
+                    case states.EXPECT_INT:
+                        curState = nextState == states.OTHER ? states.EXCEPTION : nextState;
+                        break;
+                    case states.INT:
+                        NumberSM numberSM = new NumberSM(streamHandler);
+                        Lexeme? charCodeLexeme = numberSM.GetNextLexeme(lexer);
+
+                        if (charCodeLexeme == null ||
+                            charCodeLexeme.value == null ||
+                            charCodeLexeme.type != Constants.LexemeType.INTEGER ||
+                            uint.Parse(charCodeLexeme.value) > Constants.MAX_CHARACTER_NUMBER) {
+                            curState = states.EXCEPTION;
+                            break;
+                        }
+
+                        foundString.Append((char)uint.Parse(charCodeLexeme.value));
+                        rawLexeme.Append(charCodeLexeme.raw);
+
+                        peekedChar = streamHandler.Peek();
+                        nextState = (states)getNextState((int)curState, peekedChar);
+                        curState = nextState == states.OTHER ? states.END : nextState;
+                        if (nextState == states.EXPECT_INT || nextState == states.EXPECT_CHAR) {
+                            rawLexeme.Append(peekedChar);
+                            streamHandler.GetChar();
+                        }
+                        break;
                 }
             }
 
-            if (curState == 6) {
+            if (curState == states.EXCEPTION) {
                 ExceptionHandler.Throw(Exceptions.IncorrectStringFormat, streamHandler.lineNumber, streamHandler.charNumber + 1);
             }
-            if (curState == 7) {
+            if (curState == states.END) {
                 newLexeme.type = Constants.LexemeType.STRING;
                 newLexeme.value = foundString.ToString();
                 newLexeme.raw = rawLexeme.ToString();

@@ -1,37 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace PascalCompiler.Lexer {
     public class OperatorSeparatorSM: StateMachine {
-        private readonly int[] endStates = new int[2] {6, 7};
+        private readonly states[] endStates = new states[2] {states.OPERATOR, states.SEPARATOR};
+        private enum states {
+            OTHER,
+            START,
+            EXPECT_EQUAL_OR_MORE,
+            EXPECT_EQUAL,
+            EXPECT_ASSIGN,
+            EXPECT_POINT,
+            OPERATOR,
+            SEPARATOR
+        }
 
         public OperatorSeparatorSM(StreamHandler sh): base(sh) {
             rules = new Dictionary<int, Dictionary<HashSet<char>, int>>{
-                { 1, new Dictionary<HashSet<char>, int> {
-                        { new HashSet<char>{ '<' }, 2 },
-                        { new HashSet<char> { '>' }, 3 },
-                        { new HashSet<char> { ':' }, 4 },
-                        { new HashSet<char> { '.' }, 5 },
-                        { new HashSet<char> { '+', '-', '*', '/', '=' }, 6 },
-                        { new HashSet<char> { ',', ';', '(', ')', '[', ']' } , 7 }
+                { (int)states.START, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char>{ '<' }, (int)states.EXPECT_EQUAL_OR_MORE },
+                        { new HashSet<char> { '>' }, (int)states.EXPECT_EQUAL },
+                        { new HashSet<char> { ':' }, (int)states.EXPECT_ASSIGN },
+                        { new HashSet<char> { '.' }, (int)states.EXPECT_POINT },
+                        { new HashSet<char> { '+', '-', '*', '/', '=' }, (int)states.OPERATOR },
+                        { new HashSet<char> { ',', ';', '(', ')', '[', ']' } , (int)states.SEPARATOR }
                     }
                 },
-                { 2, new Dictionary<HashSet<char>, int> {
+                { (int)states.EXPECT_EQUAL_OR_MORE, new Dictionary<HashSet<char>, int> {
                         { new HashSet<char> { '>', '=' }, 6 }
                     }
                 },
-                { 3, new Dictionary<HashSet<char>, int> {
+                { (int)states.EXPECT_EQUAL, new Dictionary<HashSet<char>, int> {
                         { new HashSet<char> { '=' }, 6 }
                     }
                 },
-                { 4, new Dictionary<HashSet<char>, int> {
+                { (int)states.EXPECT_ASSIGN, new Dictionary<HashSet<char>, int> {
                         { new HashSet<char> { '=' }, 6 }
                     }
                 },
-                { 5, new Dictionary<HashSet<char>, int> {
+                { (int)states.EXPECT_POINT, new Dictionary<HashSet<char>, int> {
                         { new HashSet<char> { '.' }, 7 }
                     }
                 }
@@ -40,26 +46,26 @@ namespace PascalCompiler.Lexer {
 
         public Lexeme GetNextLexeme() {
             Lexeme newLexeme = new Lexeme();
-            int curState = 1;
+            states curState = states.START;
             StringBuilder rawLexeme = new StringBuilder();
             char peekedChar;
 
             while (!endStates.Contains(curState)) {
                 peekedChar = streamHandler.Peek();
-                int nextState = getNextState(curState, peekedChar);
-                if (nextState != 0) {
+                states nextState = (states)getNextState((int)curState, peekedChar);
+                if (nextState != states.OTHER) {
                     curState = nextState;
                     rawLexeme.Append(peekedChar);
                     streamHandler.GetChar();
                 }
                 else {
-                    curState = curState == 4 || curState == 5 ? 7 : 6;
+                    curState = curState == states.EXPECT_ASSIGN || curState == states.EXPECT_POINT ? states.SEPARATOR : states.OPERATOR;
                 }
             }
 
             newLexeme.raw = rawLexeme.ToString();
             newLexeme.value = newLexeme.raw;
-            newLexeme.type = curState == 6 ? Constants.LexemeType.OPERATOR : Constants.LexemeType.SEPARATOR;
+            newLexeme.type = curState == states.OPERATOR ? Constants.LexemeType.OPERATOR : Constants.LexemeType.SEPARATOR;
             return newLexeme;
         }
     }

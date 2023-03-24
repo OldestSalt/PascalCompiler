@@ -1,12 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using System.Globalization;
 
 namespace PascalCompiler.Lexer {
     public class NumberSM: StateMachine {
+        private states[] endStates = new states[] {
+            states.WRONG_DIGIT,
+            states.WRONG_FRACTIONAL_PART,
+            states.HEX,
+            states.OCT,
+            states.BIN,
+            states.BIN,
+            states.DEC,
+            states.REAL,
+            states.POINT_IS_ELLIPSIS
+        };
+
+        private enum states {
+            OTHER,
+            START,
+            EXPECT_HEX_DIGIT,
+            EXPECT_OCT_DIGIT,
+            EXPECT_BIN_DIGIT,
+            REPEAT_HEX_DIGIT,
+            REPEAT_OCT_DIGIT,
+            REPEAT_BIN_DIGIT,
+            EXPECT_DIGIT_OR_POINT_OR_E,
+            EXPECT_E_OR_DIGIT,
+            EXPECT_SIGN_OR_DIGIT,
+            EXPECT_DIGIT_AFTER_SIGN,
+            REPEAT_DIGIT_IN_FRACTIONAL_PART,
+            WRONG_DIGIT,
+            WRONG_FRACTIONAL_PART,
+            HEX,
+            OCT,
+            BIN,
+            DEC,
+            REAL,
+            POINT_IS_ELLIPSIS
+        }
 
         public void StringToUInt(string input, int radix, out uint result) {
             uint parsedInt = Convert.ToUInt32(input, radix);
@@ -21,61 +52,61 @@ namespace PascalCompiler.Lexer {
 
         public NumberSM(StreamHandler sh): base(sh) {
             rules = new Dictionary<int, Dictionary<HashSet<char>, int>> {
-                { 1, new Dictionary<HashSet<char>, int> {
-                        { new HashSet<char> { '$' }, 2 },
-                        { new HashSet<char> { '&' }, 3 },
-                        { new HashSet<char> { '%' }, 4 },
-                        { Constants.Digits, 8 }
+                { (int)states.START, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '$' }, (int)states.EXPECT_HEX_DIGIT },
+                        { new HashSet<char> { '&' }, (int)states.EXPECT_OCT_DIGIT },
+                        { new HashSet<char> { '%' }, (int)states.EXPECT_BIN_DIGIT },
+                        { Constants.Digits, (int)states.EXPECT_DIGIT_OR_POINT_OR_E }
                     }
                 },
-                { 2, new Dictionary<HashSet<char>, int> {
-                        { Constants.HexaDigits, 5 }
+                { (int)states.EXPECT_HEX_DIGIT, new Dictionary<HashSet<char>, int> {
+                        { Constants.HexaDigits, (int)states.REPEAT_HEX_DIGIT }
                     }
                 },
-                { 3, new Dictionary<HashSet<char>, int> {
-                        { Constants.OctalDigits, 6 }
+                { (int)states.EXPECT_OCT_DIGIT, new Dictionary<HashSet<char>, int> {
+                        { Constants.OctalDigits, (int)states.REPEAT_OCT_DIGIT }
                     }
                 },
-                { 4, new Dictionary<HashSet<char>, int> {
-                        { Constants.BinDigits, 7 }
+                { (int)states.EXPECT_BIN_DIGIT, new Dictionary<HashSet<char>, int> {
+                        { Constants.BinDigits, (int)states.REPEAT_BIN_DIGIT }
                     }
                 },
-                { 5, new Dictionary<HashSet<char>, int> {
-                        { Constants.HexaDigits, 5 }
+                { (int)states.REPEAT_HEX_DIGIT, new Dictionary<HashSet<char>, int> {
+                        { Constants.HexaDigits, (int)states.REPEAT_HEX_DIGIT }
                     }
                 },
-                { 6, new Dictionary<HashSet<char>, int> {
-                        { Constants.OctalDigits, 6 },
-                        { Constants.NonOctalDigits, 13 }
+                { (int)states.REPEAT_OCT_DIGIT, new Dictionary<HashSet<char>, int> {
+                        { Constants.OctalDigits, (int)states.REPEAT_OCT_DIGIT },
+                        { Constants.NonOctalDigits, (int)states.WRONG_DIGIT }
                     }
                 },
-                { 7, new Dictionary<HashSet<char>, int> {
-                        { Constants.BinDigits, 7 },
-                        { Constants.NonBinDigits, 13 }
+                { (int)states.REPEAT_BIN_DIGIT, new Dictionary<HashSet<char>, int> {
+                        { Constants.BinDigits, (int)states.REPEAT_BIN_DIGIT },
+                        { Constants.NonBinDigits, (int)states.WRONG_DIGIT }
                     }
                 },
-                { 8, new Dictionary<HashSet<char>, int> {
-                        { Constants.Digits, 8 },
-                        { new HashSet<char> { '.' }, 9 },
-                        { new HashSet<char> { 'e' }, 10 }
+                { (int)states.EXPECT_DIGIT_OR_POINT_OR_E, new Dictionary<HashSet<char>, int> {
+                        { Constants.Digits, (int)states.EXPECT_DIGIT_OR_POINT_OR_E },
+                        { new HashSet<char> { '.' }, (int)states.EXPECT_E_OR_DIGIT },
+                        { new HashSet<char> { 'e' }, (int)states.EXPECT_SIGN_OR_DIGIT }
                     }
                 },
-                { 9, new Dictionary<HashSet<char>, int> {
-                        { Constants.Digits, 9 },
-                        { new HashSet<char> { 'e' }, 10 }
+                { (int)states.EXPECT_E_OR_DIGIT, new Dictionary<HashSet<char>, int> {
+                        { Constants.Digits, (int)states.EXPECT_E_OR_DIGIT },
+                        { new HashSet<char> { 'e' }, (int)states.EXPECT_SIGN_OR_DIGIT }
                     }
                 },
-                { 10, new Dictionary<HashSet<char>, int> {
-                        { new HashSet<char> { '+', '-' }, 11 },
-                        { Constants.Digits, 12 }
+                { (int)states.EXPECT_SIGN_OR_DIGIT, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '+', '-' }, (int)states.EXPECT_DIGIT_AFTER_SIGN },
+                        { Constants.Digits, (int)states.REPEAT_DIGIT_IN_FRACTIONAL_PART }
                     }
                 },
-                { 11, new Dictionary<HashSet<char>, int> {
-                        { Constants.Digits, 12 }
+                { (int)states.EXPECT_DIGIT_AFTER_SIGN, new Dictionary<HashSet<char>, int> {
+                        { Constants.Digits, (int)states.REPEAT_DIGIT_IN_FRACTIONAL_PART }
                     }
                 },
-                { 12, new Dictionary<HashSet<char>, int> {
-                        { Constants.Digits, 12 }
+                { (int)states.REPEAT_DIGIT_IN_FRACTIONAL_PART, new Dictionary<HashSet<char>, int> {
+                        { Constants.Digits, (int)states.REPEAT_DIGIT_IN_FRACTIONAL_PART }
                     }
                 }
             };
@@ -83,75 +114,84 @@ namespace PascalCompiler.Lexer {
 
         public Lexeme GetNextLexeme(Lexer lexer) {
             var newLexeme = new Lexeme();
-            var curState = 1;
-            int nextState;
+            states curState = states.START;
+            states nextState;
             char peekedChar;
             StringBuilder stringBuilder = new StringBuilder();
             StringBuilder rawLexeme = new StringBuilder();
 
-            while (curState < 13) {
+            while (!endStates.Contains(curState)) {
                 peekedChar = Char.ToLower(streamHandler.Peek());
-                nextState = getNextState(curState, peekedChar);
-                
-                if (curState == 1) {
-                    curState = nextState;
-                    if (nextState >= 2 && nextState <= 4) {
-                        rawLexeme.Append(peekedChar);
-                        streamHandler.GetChar();
-                    }
-                }
-                else if (curState >= 2 && curState <= 4) curState = nextState == 0 ? 13 : nextState;
-                else if (curState == 5) {
-                    curState = nextState == 0 ? 15 : nextState;
-                    if (nextState == 5) {
-                        rawLexeme.Append(peekedChar);
-                        stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
-                    }
-                }
-                else if (curState == 6) {
-                    curState = nextState == 0 ? 16 : nextState;
-                    if (nextState == 6) {
-                        rawLexeme.Append(peekedChar);
-                        stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
-                    }
-                }
-                else if (curState == 7) {
-                    curState = nextState == 0 ? 17 : nextState;
-                    if (nextState == 7) {
-                        rawLexeme.Append(peekedChar);
-                        stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
-                    }
-                }
-                else if (curState == 8) {
-                    curState = nextState == 0 ? 18 : nextState;
-                    if (nextState == 9 && streamHandler.Peek2() == '.') curState = 20;
-                    else if (nextState >= 8 && nextState <= 10) {
-                        rawLexeme.Append(peekedChar);
-                        stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
-                    }
-                }
-                else if (curState == 9) {
-                    curState = nextState == 0 ? 19 : nextState;
-                    if (nextState >= 9 && nextState <= 10) {
-                        rawLexeme.Append(peekedChar);
-                        stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
-                    }
-                }
-                else if (curState == 10) {
-                    curState = nextState == 0 ? 14 : nextState;
-                    if (nextState == 11) {
-                        rawLexeme.Append(peekedChar);
-                        stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
-                    }
-                    else if (nextState == 12) stringBuilder.Append('+');
-                }
-                else if (curState == 11) curState = nextState == 0 ? 14 : nextState;
-                else if (curState == 12) {
-                    curState = nextState == 0 ? 19 : nextState;
-                    if (nextState == 12) {
-                        rawLexeme.Append(peekedChar);
-                        stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
-                    }
+                nextState = (states)getNextState((int)curState, peekedChar);
+
+                switch (curState) {
+                    case states.START:
+                        curState = nextState;
+                        if (nextState == states.EXPECT_HEX_DIGIT || nextState == states.EXPECT_OCT_DIGIT || nextState == states.EXPECT_BIN_DIGIT) {
+                            rawLexeme.Append(peekedChar);
+                            streamHandler.GetChar();
+                        }
+                        break;
+                    case states.EXPECT_HEX_DIGIT:
+                    case states.EXPECT_OCT_DIGIT:
+                    case states.EXPECT_BIN_DIGIT:
+                        curState = nextState == states.OTHER ? states.WRONG_DIGIT : nextState;
+                        break;
+                    case states.REPEAT_HEX_DIGIT:
+                        curState = nextState == states.OTHER ? states.HEX : nextState;
+                        if (nextState == states.REPEAT_HEX_DIGIT) {
+                            rawLexeme.Append(peekedChar);
+                            stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
+                        }
+                        break;
+                    case states.REPEAT_OCT_DIGIT:
+                        curState = nextState == states.OTHER ? states.OCT : nextState;
+                        if (nextState == states.REPEAT_OCT_DIGIT) {
+                            rawLexeme.Append(peekedChar);
+                            stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
+                        }
+                        break;
+                    case states.REPEAT_BIN_DIGIT:
+                        curState = nextState == states.OTHER ? states.BIN : nextState;
+                        if (nextState == states.REPEAT_BIN_DIGIT) {
+                            rawLexeme.Append(peekedChar);
+                            stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
+                        }
+                        break;
+                    case states.EXPECT_DIGIT_OR_POINT_OR_E:
+                        curState = nextState == states.OTHER ? states.DEC : nextState;
+                        if (nextState == states.EXPECT_E_OR_DIGIT && streamHandler.Peek2() == '.')
+                            curState = states.POINT_IS_ELLIPSIS;
+                        else if (nextState == states.EXPECT_DIGIT_OR_POINT_OR_E || nextState == states.EXPECT_E_OR_DIGIT || nextState == states.EXPECT_SIGN_OR_DIGIT) {
+                            rawLexeme.Append(peekedChar);
+                            stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
+                        }
+                        break;
+                    case states.EXPECT_E_OR_DIGIT:
+                        curState = nextState == states.OTHER ? states.REAL : nextState;
+                        if (nextState == states.EXPECT_E_OR_DIGIT || nextState == states.EXPECT_SIGN_OR_DIGIT) {
+                            rawLexeme.Append(peekedChar);
+                            stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
+                        }
+                        break;
+                    case states.EXPECT_SIGN_OR_DIGIT:
+                        curState = nextState == states.OTHER ? states.WRONG_FRACTIONAL_PART : nextState;
+                        if (nextState == states.EXPECT_DIGIT_AFTER_SIGN) {
+                            rawLexeme.Append(peekedChar);
+                            stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
+                        }
+                        else if (nextState == states.REPEAT_DIGIT_IN_FRACTIONAL_PART) stringBuilder.Append('+');
+                        break;
+                    case states.EXPECT_DIGIT_AFTER_SIGN:
+                        curState = nextState == states.OTHER ? states.WRONG_FRACTIONAL_PART : nextState;
+                        break;
+                    case states.REPEAT_DIGIT_IN_FRACTIONAL_PART:
+                        curState = nextState == states.OTHER ? states.REAL : nextState;
+                        if (nextState == states.REPEAT_DIGIT_IN_FRACTIONAL_PART) {
+                            rawLexeme.Append(peekedChar);
+                            stringBuilder.Append(Char.ToLower(streamHandler.GetChar()));
+                        }
+                        break;
                 }
             }
 
@@ -159,52 +199,59 @@ namespace PascalCompiler.Lexer {
             newLexeme.value = parsedNumberString;
             newLexeme.raw = rawLexeme.ToString();
 
-            if (curState == 13) {
-                ExceptionHandler.Throw(Exceptions.IntegerIncorrectFormat, streamHandler.lineNumber, streamHandler.charNumber + 1);
-            }
-            else if (curState == 14) {
-                ExceptionHandler.Throw(Exceptions.FloatIncorrectFormat, streamHandler.lineNumber, streamHandler.charNumber + 1);
-            }
-            else if (curState >= 15 && curState <= 18 || curState == 20) {
-                newLexeme.type = Constants.LexemeType.INTEGER;
-                int radix = 10;
-                uint parsedInt;
-                
-                switch (curState) {
-                    case 15: 
-                        radix = 16;
-                        break;
-                    case 16: 
-                        radix = 8;
-                        break;
-                    case 17: 
-                        radix = 2;
-                        break;
-                }
-                try {
-                    StringToUInt(parsedNumberString, radix, out parsedInt);
-                    newLexeme.value = parsedInt.ToString();
-                }
-                catch (OverflowException) {
-                    if (lexer.curLexeme != null && lexer.curLexeme.value == "-" && (parsedNumberString == "2147483648" || parsedNumberString == "20000000000" || parsedNumberString == "10000000000000000000000000000000" || parsedNumberString == "80000000")) {
-                        newLexeme.value = "2147483648";
-                    }
-                    else {
-                        ExceptionHandler.Throw(Exceptions.IntegerOverflow, streamHandler.lineNumber, streamHandler.charNumber + 1);
-                    }
-                }
-            }
-            else if (curState == 19) {
-                newLexeme.type = Constants.LexemeType.REAL;
-                float parsedFloat;
+            switch (curState) {
+                case states.WRONG_DIGIT:
+                    ExceptionHandler.Throw(Exceptions.IntegerIncorrectFormat, streamHandler.lineNumber, streamHandler.charNumber + 1);
+                    break;
+                case states.WRONG_FRACTIONAL_PART:
+                    ExceptionHandler.Throw(Exceptions.FloatIncorrectFormat, streamHandler.lineNumber, streamHandler.charNumber + 1);
+                    break;
+                case states.HEX:
+                case states.OCT:
+                case states.BIN:
+                case states.DEC:
+                case states.POINT_IS_ELLIPSIS:
+                    newLexeme.type = Constants.LexemeType.INTEGER;
+                    int radix = 10;
+                    uint parsedInt;
 
-                try {
-                    StringToFloat(parsedNumberString, out parsedFloat);
-                    newLexeme.value = parsedFloat.ToString();
-                }
-                catch (OverflowException) {
-                    ExceptionHandler.Throw(Exceptions.FloatOverflow, streamHandler.lineNumber, streamHandler.charNumber + 1);
-                }
+                    switch (curState) {
+                        case states.HEX:
+                            radix = 16;
+                            break;
+                        case states.OCT:
+                            radix = 8;
+                            break;
+                        case states.BIN:
+                            radix = 2;
+                            break;
+                    }
+
+                    try {
+                        StringToUInt(parsedNumberString, radix, out parsedInt);
+                        newLexeme.value = parsedInt.ToString();
+                    }
+                    catch (OverflowException) {
+                        if (lexer.curLexeme != null && lexer.curLexeme.value == "-" && (parsedNumberString == "2147483648" || parsedNumberString == "20000000000" || parsedNumberString == "10000000000000000000000000000000" || parsedNumberString == "80000000")) {
+                            newLexeme.value = "2147483648";
+                        }
+                        else {
+                            ExceptionHandler.Throw(Exceptions.IntegerOverflow, streamHandler.lineNumber, streamHandler.charNumber + 1);
+                        }
+                    }
+                    break;
+                case states.REAL:
+                    newLexeme.type = Constants.LexemeType.REAL;
+                    float parsedFloat;
+
+                    try {
+                        StringToFloat(parsedNumberString, out parsedFloat);
+                        newLexeme.value = parsedFloat.ToString();
+                    }
+                    catch (OverflowException) {
+                        ExceptionHandler.Throw(Exceptions.FloatOverflow, streamHandler.lineNumber, streamHandler.charNumber + 1);
+                    }
+                    break;
             }
 
             return newLexeme;

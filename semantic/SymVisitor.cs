@@ -22,9 +22,6 @@ namespace PascalCompiler.Semantic {
             symStack.pushSym(new SymRead("readln"));
             symStack.pushSym(new SymRead("read"));
 
-            
-            //symStack.pushSym(new SymFunc("trunc", new List<SymVarParam>() { new SymVarParam("r", new SymTypeReal("real"), null) }, new SymTypeInteger("integer")));
-            //symStack.pushSym(new SymFunc("round", new List<SymVarParam>() { new SymVarParam("r", new SymTypeReal("real"), null) }, new SymTypeInteger("integer")));
             symStack.pushScope();
 
             if (node.optionalBlock != null) VisitOptionalBlock(node.optionalBlock);
