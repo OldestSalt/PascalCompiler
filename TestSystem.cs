@@ -4,6 +4,7 @@ using PascalCompiler.Parser.Nodes;
 namespace PascalCompiler {
     public static class TestSystem {
         public static StringWriter? output = null;
+
         public static List<string> getCorrect(string path) {
             List<string>? correctOutput = null;
 
@@ -15,24 +16,24 @@ namespace PascalCompiler {
             }
             return correctOutput!;
         }
-        public static void Compare(List<string> output, List<string> correctOutput, string testFilename) {
-            bool isCorrect = true;
+        public static bool Compare(List<string> output, List<string> correctOutput, string testFilename) {
 
             if (output!.Count != correctOutput.Count) {
                 Console.WriteLine($"Test file '{testFilename}':\tWrong answer!");
-                return;
+                return false;
             }
 
             for (int i = 0; i < correctOutput!.Count; i++) {
                 if (correctOutput[i] != output[i]) {
                     Console.WriteLine($"Test file '{testFilename}':\tWrong answer! Expected:\n\t{correctOutput[i]}\nGot:\n\t{output[i]}");
-                    isCorrect = false;
-                    break;
+                    return false;
                 }
             }
-            if (isCorrect) Console.WriteLine($"Test file '{testFilename}':\tOK");
+            Console.WriteLine($"Test file '{testFilename}':\tOK");
+            return true;
         }
         public static void LexerTests() {
+            int correctTests = 0, wrongTests = 0;
             foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/lexer/input").GetFiles()) {
                 output = new StringWriter();
                 Console.SetOut(output);
@@ -58,11 +59,17 @@ namespace PascalCompiler {
                 List<string> lexemeList = output.ToString().Split('\n').ToList();
                 output = null;
 
-                Compare(lexemeList, correctLexemeList!, file.Name);
+                if (Compare(lexemeList, correctLexemeList!, file.Name))
+                    correctTests++;
+                else
+                    wrongTests++;
             }
+
+            Console.WriteLine($"\nCorrect tests: {correctTests}\nWrong tests: {wrongTests}");
         }
 
         public static void ExpressionsParserTest() {
+            int correctTests = 0, wrongTests = 0;
             foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/expressions/input").GetFiles()) {
                 output = new StringWriter();
                 Console.SetOut(output);
@@ -87,11 +94,17 @@ namespace PascalCompiler {
                 List<string> ASTlines = output.ToString().Split('\n').ToList();
                 output = null;
 
-                Compare(ASTlines, correctASTlines!, file.Name);
+                if (Compare(ASTlines, correctASTlines!, file.Name))
+                    correctTests++;
+                else
+                    wrongTests++;
             }
+
+            Console.WriteLine($"\nCorrect tests: {correctTests}\nWrong tests: {wrongTests}");
         }
 
         public static void ParserTest() {
+            int correctTests = 0, wrongTests = 0;
             foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/parser/input").GetFiles()) {
                 output = new StringWriter();
                 Console.SetOut(output);
@@ -117,12 +130,17 @@ namespace PascalCompiler {
                 List<string> ASTlines = output.ToString().Split('\n').ToList();
                 output = null;
 
-
-                Compare(ASTlines, correctASTlines!, file.Name);
+                if (Compare(ASTlines, correctASTlines!, file.Name))
+                    correctTests++;
+                else
+                    wrongTests++;
             }
+
+            Console.WriteLine($"\nCorrect tests: {correctTests}\nWrong tests: {wrongTests}");
         }
 
         public static void SemanticTest() {
+            int correctTests = 0, wrongTests = 0;
             foreach (var file in new DirectoryInfo($"{CommonConstants.ProjectPath}/tests/semantic/input").GetFiles()) {
                 output = new StringWriter();
                 Console.SetOut(output);
@@ -151,8 +169,13 @@ namespace PascalCompiler {
                 List<string> ASTlines = output.ToString().Split('\n').ToList();
                 output = null;
 
-                Compare(ASTlines, correctASTlines!, file.Name);
+                if (Compare(ASTlines, correctASTlines!, file.Name))
+                    correctTests++;
+                else
+                    wrongTests++;
             }
+
+            Console.WriteLine($"\nCorrect tests: {correctTests}\nWrong tests: {wrongTests}");
         }
     }
 }

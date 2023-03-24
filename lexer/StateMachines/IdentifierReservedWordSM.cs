@@ -3,18 +3,17 @@
 namespace PascalCompiler.Lexer {
     public class IdentifierReservedWordSM: StateMachine {
         public IdentifierReservedWordSM(StreamHandler sh): base(sh) {
-            streamHandler = sh;
-            rules = new Dictionary<int, Dictionary<char[], int>> {
-                { 1, new Dictionary<char[], int> {
+            rules = new Dictionary<int, Dictionary<HashSet<char>, int>> {
+                { 1, new Dictionary<HashSet<char>, int> {
                         { Constants.Letters, 1 },
                         { Constants.Digits, 1 },
-                        { new char[] {'_'}, 1 }
+                        { new HashSet<char> {'_'}, 1 }
                     }
                 }
             };
         }
 
-        public Lexeme? GetNextLexeme() {
+        public Lexeme GetNextLexeme() {
             var newLexeme = new Lexeme();
             var curState = 1;
             var foundString = new StringBuilder(Constants.MAX_IDENTIFIER_LENGTH);

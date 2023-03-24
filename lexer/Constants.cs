@@ -1,6 +1,6 @@
 ﻿namespace PascalCompiler.Lexer {
     public static class Constants {
-        public static readonly int MAX_IDENTIFIER_LENGTH = 127; 
+        public static readonly int MAX_IDENTIFIER_LENGTH = 127;
 
         public static readonly uint MAX_UNSIGNED_INT = 2147483647;
 
@@ -17,7 +17,7 @@
             EOF
         };
 
-        public static readonly string[] ReservedWords = {
+        public static readonly HashSet<string> ReservedWords = new HashSet<string> {
             "array",
             "begin",
             "case",
@@ -61,7 +61,7 @@
             "is"
         };
 
-        public static readonly char[] Letters = {
+        public static readonly HashSet<char> Letters = new HashSet<char> {
             'a',
             'b',
             'c',
@@ -90,7 +90,7 @@
             'z'
         };
 
-        public static readonly string[] Operators = {
+        public static readonly HashSet<string> Operators = new HashSet<string>{
             "+",
             "-",
             "*",
@@ -111,13 +111,13 @@
             "mod"
         };
 
-        public static readonly char[] ModifierChars = {
+        public static readonly HashSet<char> ModifierChars = new HashSet<char> {
             '$',
             '&',
             '%'
         };
 
-        public static readonly char[] Digits = {
+        public static readonly HashSet<char> Digits = new HashSet<char> {
             '0',
             '1',
             '2',
@@ -130,7 +130,7 @@
             '9'
         };
 
-        public static readonly char[] NonDecDigits = {
+        public static readonly HashSet<char> NonDecDigits = new HashSet<char> {
             'a',
             'b',
             'c',
@@ -139,12 +139,12 @@
             'f'
         };
 
-        public static readonly char[] BinDigits = {
+        public static readonly HashSet<char> BinDigits = new HashSet<char> {
             '0',
             '1'
         };
 
-        public static readonly char[] NonBinDigits = {
+        public static readonly HashSet<char> NonBinDigits = new HashSet<char>{
             '2',
             '3',
             '4',
@@ -155,7 +155,7 @@
             '9'
         };
 
-        public static readonly char[] OctalDigits = {
+        public static readonly HashSet<char> OctalDigits = new HashSet<char> {
             '0',
             '1',
             '2',
@@ -166,12 +166,12 @@
             '7'
         };
 
-        public static readonly char[] NonOctalDigits = {
+        public static readonly HashSet<char> NonOctalDigits = new HashSet<char>{
             '8',
             '9'
         };
 
-        public static readonly char[] HexaDigits = {
+        public static readonly HashSet<char> HexaDigits = new HashSet<char> {
             '0',
             '1',
             '2',
@@ -190,7 +190,7 @@
             'f'
         };
 
-        public static readonly char[] SpecialChars = {
+        public static readonly HashSet<char> SpecialChars = new HashSet<char>{
             '+',
             '-',
             '*',

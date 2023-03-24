@@ -2,7 +2,7 @@
     public static class OutputHandler {
 
         public static void WriteLexeme(Lexer.Lexeme? lexeme) {
-            Console.WriteLine($"{lexeme!.lineNumber}, {lexeme!.charNumber}:\t{lexeme!.type}\t{lexeme!.value}\t{lexeme!.raw}");
+            Console.WriteLine($"{lexeme!.lineNumber}\t{lexeme!.charNumber}\t{lexeme!.type}\t{lexeme!.value}\t{lexeme!.raw}");
         }
         public static void WriteExpressionAST(Expressions.Node ast, string indents = "") {
             Console.WriteLine(ast.value);

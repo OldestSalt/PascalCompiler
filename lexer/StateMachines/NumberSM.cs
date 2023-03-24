@@ -20,69 +20,68 @@ namespace PascalCompiler.Lexer {
         }
 
         public NumberSM(StreamHandler sh): base(sh) {
-            streamHandler = sh;
-            rules = new Dictionary<int, Dictionary<char[], int>> {
-                { 1, new Dictionary<char[], int> {
-                        { new char[] { '$' }, 2 },
-                        { new char[] { '&' }, 3 },
-                        { new char[] { '%' }, 4 },
+            rules = new Dictionary<int, Dictionary<HashSet<char>, int>> {
+                { 1, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '$' }, 2 },
+                        { new HashSet<char> { '&' }, 3 },
+                        { new HashSet<char> { '%' }, 4 },
                         { Constants.Digits, 8 }
                     }
                 },
-                { 2, new Dictionary<char[], int> {
+                { 2, new Dictionary<HashSet<char>, int> {
                         { Constants.HexaDigits, 5 }
                     }
                 },
-                { 3, new Dictionary<char[], int> {
+                { 3, new Dictionary<HashSet<char>, int> {
                         { Constants.OctalDigits, 6 }
                     }
                 },
-                { 4, new Dictionary<char[], int> {
+                { 4, new Dictionary<HashSet<char>, int> {
                         { Constants.BinDigits, 7 }
                     }
                 },
-                { 5, new Dictionary<char[], int> {
+                { 5, new Dictionary<HashSet<char>, int> {
                         { Constants.HexaDigits, 5 }
                     }
                 },
-                { 6, new Dictionary<char[], int> {
+                { 6, new Dictionary<HashSet<char>, int> {
                         { Constants.OctalDigits, 6 },
                         { Constants.NonOctalDigits, 13 }
                     }
                 },
-                { 7, new Dictionary<char[], int> {
+                { 7, new Dictionary<HashSet<char>, int> {
                         { Constants.BinDigits, 7 },
                         { Constants.NonBinDigits, 13 }
                     }
                 },
-                { 8, new Dictionary<char[], int> {
+                { 8, new Dictionary<HashSet<char>, int> {
                         { Constants.Digits, 8 },
-                        { new char[] { '.' }, 9 },
-                        { new char[] { 'e' }, 10 }
+                        { new HashSet<char> { '.' }, 9 },
+                        { new HashSet<char> { 'e' }, 10 }
                     }
                 },
-                { 9, new Dictionary<char[], int> {
+                { 9, new Dictionary<HashSet<char>, int> {
                         { Constants.Digits, 9 },
-                        { new char[] { 'e' }, 10 }
+                        { new HashSet<char> { 'e' }, 10 }
                     }
                 },
-                { 10, new Dictionary<char[], int> {
-                        { new char[] { '+', '-' }, 11 },
+                { 10, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '+', '-' }, 11 },
                         { Constants.Digits, 12 }
                     }
                 },
-                { 11, new Dictionary<char[], int> {
+                { 11, new Dictionary<HashSet<char>, int> {
                         { Constants.Digits, 12 }
                     }
                 },
-                { 12, new Dictionary<char[], int> {
+                { 12, new Dictionary<HashSet<char>, int> {
                         { Constants.Digits, 12 }
                     }
                 }
             };
         }
 
-        public Lexeme? GetNextLexeme(Lexer lexer) {
+        public Lexeme GetNextLexeme(Lexer lexer) {
             var newLexeme = new Lexeme();
             var curState = 1;
             int nextState;

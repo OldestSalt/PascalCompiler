@@ -5,7 +5,7 @@
         private readonly StringSM stringSM;
         private readonly OperatorSeparatorSM operatorSeparatorSM;
         private readonly NumberSM numberSM;
-        public Lexeme? curLexeme = null;
+        public Lexeme curLexeme;
 
         public Lexer(string fileName) {
             streamHandler = new StreamHandler(fileName);
@@ -13,6 +13,7 @@
             stringSM = new StringSM(streamHandler);
             operatorSeparatorSM = new OperatorSeparatorSM(streamHandler);
             numberSM = new NumberSM(streamHandler);
+            curLexeme = new Lexeme();
         }
 
         private bool IsEOF() {
@@ -23,8 +24,8 @@
             return false;
         }
 
-        public Lexeme? GetNextLexeme() {
-            Lexeme? nextLexeme = null;
+        public Lexeme GetNextLexeme() {
+            Lexeme nextLexeme = new Lexeme();
             streamHandler.SkipWhiteSpacesAndComments();
             char nextChar = streamHandler.Peek();
             uint lineNumber = streamHandler.lineNumber;
@@ -48,7 +49,6 @@
                 }
             }
             else {
-                nextLexeme = new Lexeme();
                 nextLexeme.type = Constants.LexemeType.EOF;
             }
 

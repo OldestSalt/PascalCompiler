@@ -1,12 +1,12 @@
-1, 1:	STRING	string	'string'
-2, 1:	STRING	Another String	'Another String'
-3, 1:	STRING		''
-4, 1:	STRING	?	#63
-5, 1:	STRING	escaping: ?@A string	'escaping: '#63#64#65' string'
-6, 1:	STRING	Aoooaaaaa	#65'oooaaaaa'
-7, 1:	STRING	eeeaaaDDDF	'eeeaaaDDD'#70
-8, 1:	STRING	mlemZ?mlimmlom	'mlem'#90#63'mlim'#23'mlom'
-9, 1:	STRING	there's whitespace ->	'there''s whitespace ->'
-9, 26:	STRING	c	#99
-9, 30:	STRING	<- there's too	'<- there''s too'
+1	1	STRING	string	'string'
+2	1	STRING	Another String	'Another String'
+3	1	STRING		''
+4	1	STRING	?	#63
+5	1	STRING	escaping: ?@A string	'escaping: '#63#64#65' string'
+6	1	STRING	Aoooaaaaa	#65'oooaaaaa'
+7	1	STRING	eeeaaaDDDF	'eeeaaaDDD'#70
+8	1	STRING	mlemZ?mlimmlom	'mlem'#90#63'mlim'#23'mlom'
+9	1	STRING	there's whitespace ->	'there''s whitespace ->'
+9	26	STRING	c	#99
+9	30	STRING	<- there's too	'<- there''s too'
 Error detected at position 10, 20: String has an incorrect format

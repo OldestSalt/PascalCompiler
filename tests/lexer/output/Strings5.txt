@@ -1,5 +1,5 @@
-1, 1:	STRING	it	'it'
-1, 5:	IDENTIFIER	s	s
-1, 7:	IDENTIFIER	an	an
-1, 10:	IDENTIFIER	error	error
+1	1	STRING	it	'it'
+1	5	IDENTIFIER	s	s
+1	7	IDENTIFIER	an	an
+1	10	IDENTIFIER	error	error
 Error detected at position 1, 17: String has an incorrect format

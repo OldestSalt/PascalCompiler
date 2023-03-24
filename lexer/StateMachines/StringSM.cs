@@ -9,37 +9,37 @@ namespace PascalCompiler.Lexer {
     public class StringSM: StateMachine {
         private readonly int[] endStates = new int[2] { 6, 7 };
         public StringSM(StreamHandler sh) : base(sh) {
-            rules = new Dictionary<int, Dictionary<char[], int>> {
-                { 1, new Dictionary<char[], int> {
-                        { new char[] { '\'' }, 2 },
-                        { new char[] { '#' }, 4 }
+            rules = new Dictionary<int, Dictionary<HashSet<char>, int>> {
+                { 1, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '\'' }, 2 },
+                        { new HashSet<char> { '#' }, 4 }
                     }
                 },
-                { 2, new Dictionary<char[], int> {
-                        { new char[] { '\n', '\r', '\0' }, 6 },
-                        { new char[] { '\'' }, 3 }
+                { 2, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '\n', '\r', '\0' }, 6 },
+                        { new HashSet<char> { '\'' }, 3 }
                     }
                 },
-                { 3, new Dictionary<char[], int> {
-                        { new char[] { '\'' }, 2 },
-                        { new char[] { '#' }, 4 }
+                { 3, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '\'' }, 2 },
+                        { new HashSet<char> { '#' }, 4 }
                     }
                 },
-                { 4, new Dictionary<char[], int> {
+                { 4, new Dictionary<HashSet<char>, int> {
                         { Constants.Digits, 5 },
                         { Constants.ModifierChars, 5 }
                     }
                 },
-                { 5, new Dictionary<char[], int> {
+                { 5, new Dictionary<HashSet<char>, int> {
                         { Constants.Digits, 5 },
-                        { new char[] { '#' }, 4 },
-                        { new char[] { '\'' }, 2 }
+                        { new HashSet<char> { '#' }, 4 },
+                        { new HashSet<char> { '\'' }, 2 }
                     }
                 }
             };
         }
 
-        public Lexeme? GetNextLexeme(Lexer lexer) {
+        public Lexeme GetNextLexeme(Lexer lexer) {
             var newLexeme = new Lexeme();
             var curState = 1;
             var foundString = new StringBuilder();

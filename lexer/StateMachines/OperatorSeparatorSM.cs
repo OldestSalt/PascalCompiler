@@ -9,37 +9,36 @@ namespace PascalCompiler.Lexer {
         private readonly int[] endStates = new int[2] {6, 7};
 
         public OperatorSeparatorSM(StreamHandler sh): base(sh) {
-            streamHandler = sh;
-            rules = new Dictionary<int, Dictionary<char[], int>>{
-                { 1, new Dictionary<char[], int> {
-                        { new char[] { '<' }, 2 },
-                        { new char[] { '>' }, 3 },
-                        { new char[] { ':' }, 4 },
-                        { new char[] { '.' }, 5 },
-                        { new char[] { '+', '-', '*', '/', '=' }, 6 },
-                        { new char[] { ',', ';', '(', ')', '[', ']' } , 7 }
+            rules = new Dictionary<int, Dictionary<HashSet<char>, int>>{
+                { 1, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char>{ '<' }, 2 },
+                        { new HashSet<char> { '>' }, 3 },
+                        { new HashSet<char> { ':' }, 4 },
+                        { new HashSet<char> { '.' }, 5 },
+                        { new HashSet<char> { '+', '-', '*', '/', '=' }, 6 },
+                        { new HashSet<char> { ',', ';', '(', ')', '[', ']' } , 7 }
                     }
                 },
-                { 2, new Dictionary<char[], int> {
-                        { new char[] { '>', '=' }, 6 }
+                { 2, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '>', '=' }, 6 }
                     }
                 },
-                { 3, new Dictionary<char[], int> {
-                        { new char[] { '=' }, 6 }
+                { 3, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '=' }, 6 }
                     }
                 },
-                { 4, new Dictionary<char[], int> {
-                        { new char[] { '=' }, 6 }
+                { 4, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '=' }, 6 }
                     }
                 },
-                { 5, new Dictionary<char[], int> {
-                        { new char[] { '.' }, 7 }
+                { 5, new Dictionary<HashSet<char>, int> {
+                        { new HashSet<char> { '.' }, 7 }
                     }
                 }
             };
         }
 
-        public Lexeme? GetNextLexeme() {
+        public Lexeme GetNextLexeme() {
             Lexeme newLexeme = new Lexeme();
             int curState = 1;
             StringBuilder rawLexeme = new StringBuilder();

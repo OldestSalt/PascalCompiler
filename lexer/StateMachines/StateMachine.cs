@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PascalCompiler.Lexer {
     public class StateMachine {
         protected StreamHandler streamHandler;
-        protected Dictionary<int, Dictionary<char[], int>> rules;
+        protected Dictionary<int, Dictionary<HashSet<char>, int>> rules;
 
         public StateMachine(StreamHandler sh) {
             streamHandler = sh;

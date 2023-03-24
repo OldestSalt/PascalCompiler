@@ -1,57 +1,64 @@
 ﻿namespace PascalCompiler.Lexer {
     public static class LexerUtils {
+        private static Dictionary<string, CommonConstants.ServiceWords> ServiceWords = new Dictionary<string, CommonConstants.ServiceWords>() {
+            { "array", CommonConstants.ServiceWords.ARRAY },
+            { "begin", CommonConstants.ServiceWords.BEGIN },
+            { "case", CommonConstants.ServiceWords.CASE },
+            { "const", CommonConstants.ServiceWords.CONST },
+            { "do", CommonConstants.ServiceWords.DO },
+            { "downto", CommonConstants.ServiceWords.DOWNTO },
+            { "else", CommonConstants.ServiceWords.ELSE },
+            { "end", CommonConstants.ServiceWords.END },
+            { "for", CommonConstants.ServiceWords.FOR },
+            { "function", CommonConstants.ServiceWords.FUNCTION },
+            { "if", CommonConstants.ServiceWords.IF },
+            { "of", CommonConstants.ServiceWords.OF },
+            { "procedure", CommonConstants.ServiceWords.PROCEDURE },
+            { "program", CommonConstants.ServiceWords.PROGRAM },
+            { "record", CommonConstants.ServiceWords.RECORD },
+            { "repeat", CommonConstants.ServiceWords.REPEAT },
+            { "then", CommonConstants.ServiceWords.THEN },
+            { "to", CommonConstants.ServiceWords.TO },
+            { "type", CommonConstants.ServiceWords.TYPE },
+            { "until", CommonConstants.ServiceWords.UNTIL },
+            { "var", CommonConstants.ServiceWords.VAR },
+            { "while", CommonConstants.ServiceWords.WHILE },
+            { "and", CommonConstants.ServiceWords.AND },
+            { "or", CommonConstants.ServiceWords.OR },
+            { "xor", CommonConstants.ServiceWords.XOR },
+            { "not", CommonConstants.ServiceWords.NOT },
+            { "div", CommonConstants.ServiceWords.DIV },
+            { "mod", CommonConstants.ServiceWords.MOD },
+            { "+", CommonConstants.ServiceWords.PLUS },
+            { "-", CommonConstants.ServiceWords.MINUS },
+            { "*", CommonConstants.ServiceWords.MULTIPLY },
+            { "/", CommonConstants.ServiceWords.DIVIDE },
+            { ":=", CommonConstants.ServiceWords.ASSIGN },
+            { "=", CommonConstants.ServiceWords.EQUAL },
+            { "<>", CommonConstants.ServiceWords.NOT_EQUAL },
+            { "<", CommonConstants.ServiceWords.LESSER },
+            { "<=", CommonConstants.ServiceWords.LESSER_OR_EQUAL },
+            { ">=", CommonConstants.ServiceWords.GREATER_OR_EQUAL },
+            { ">", CommonConstants.ServiceWords.GREATER },
+            { "..", CommonConstants.ServiceWords.ELLIPSIS },
+            { ":", CommonConstants.ServiceWords.COLON },
+            { ".", CommonConstants.ServiceWords.POINT },
+            { ",", CommonConstants.ServiceWords.COMMA },
+            { ";", CommonConstants.ServiceWords.SEMICOLON },
+            { "(", CommonConstants.ServiceWords.LEFT_ROUND_BRACKET },
+            { ")", CommonConstants.ServiceWords.RIGHT_ROUND_BRACKET },
+            { "[", CommonConstants.ServiceWords.LEFT_SQUARE_BRACKET },
+            { "]", CommonConstants.ServiceWords.RIGHT_SQUARE_BRACKET },
+            { "out", CommonConstants.ServiceWords.OUT }
+        };
+
         public static CommonConstants.ServiceWords GetEnumValue(string? value) {
-            switch (value) {
-                case "array": return CommonConstants.ServiceWords.ARRAY;
-                case "begin": return CommonConstants.ServiceWords.BEGIN;
-                case "case": return CommonConstants.ServiceWords.CASE;
-                case "const": return CommonConstants.ServiceWords.CONST;
-                case "do": return CommonConstants.ServiceWords.DO;
-                case "downto": return CommonConstants.ServiceWords.DOWNTO;
-                case "else": return CommonConstants.ServiceWords.ELSE;
-                case "end": return CommonConstants.ServiceWords.END;
-                case "for": return CommonConstants.ServiceWords.FOR;
-                case "function": return CommonConstants.ServiceWords.FUNCTION;
-                case "if": return CommonConstants.ServiceWords.IF;
-                case "of": return CommonConstants.ServiceWords.OF;
-                case "procedure": return CommonConstants.ServiceWords.PROCEDURE;
-                case "program": return CommonConstants.ServiceWords.PROGRAM;
-                case "record": return CommonConstants.ServiceWords.RECORD;
-                case "repeat": return CommonConstants.ServiceWords.REPEAT;
-                case "then": return CommonConstants.ServiceWords.THEN;
-                case "to": return CommonConstants.ServiceWords.TO;
-                case "type": return CommonConstants.ServiceWords.TYPE;
-                case "until": return CommonConstants.ServiceWords.UNTIL;
-                case "var": return CommonConstants.ServiceWords.VAR;
-                case "while": return CommonConstants.ServiceWords.WHILE;
-                case "and": return CommonConstants.ServiceWords.AND;
-                case "or": return CommonConstants.ServiceWords.OR;
-                case "xor": return CommonConstants.ServiceWords.XOR;
-                case "not": return CommonConstants.ServiceWords.NOT;
-                case "div": return CommonConstants.ServiceWords.DIV;
-                case "mod": return CommonConstants.ServiceWords.MOD;
-                case "+": return CommonConstants.ServiceWords.PLUS;
-                case "-": return CommonConstants.ServiceWords.MINUS;
-                case "*": return CommonConstants.ServiceWords.MULTIPLY;
-                case "/": return CommonConstants.ServiceWords.DIVIDE;
-                case ":=": return CommonConstants.ServiceWords.ASSIGN;
-                case "=": return CommonConstants.ServiceWords.EQUAL;
-                case "<>": return CommonConstants.ServiceWords.NOT_EQUAL;
-                case "<": return CommonConstants.ServiceWords.LESSER;
-                case "<=": return CommonConstants.ServiceWords.LESSER_OR_EQUAL;
-                case ">=": return CommonConstants.ServiceWords.GREATER_OR_EQUAL;
-                case ">": return CommonConstants.ServiceWords.GREATER;
-                case "..": return CommonConstants.ServiceWords.ELLIPSIS;
-                case ":": return CommonConstants.ServiceWords.COLON;
-                case ".": return CommonConstants.ServiceWords.POINT;
-                case ",": return CommonConstants.ServiceWords.COMMA;
-                case ";": return CommonConstants.ServiceWords.SEMICOLON;
-                case "(": return CommonConstants.ServiceWords.LEFT_ROUND_BRACKET;
-                case ")": return CommonConstants.ServiceWords.RIGHT_ROUND_BRACKET;
-                case "[": return CommonConstants.ServiceWords.LEFT_SQUARE_BRACKET;
-                case "]": return CommonConstants.ServiceWords.RIGHT_SQUARE_BRACKET;
-                case "out": return CommonConstants.ServiceWords.OUT;
-                default: return CommonConstants.ServiceWords.NONE;
+            CommonConstants.ServiceWords word;
+            if (value != null && ServiceWords.TryGetValue(value, out word)) {
+                return word;
+            }
+            else {
+                return CommonConstants.ServiceWords.NONE;
             }
         }
     }
