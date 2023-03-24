@@ -14,7 +14,7 @@ namespace PascalCompiler.Lexer {
         }
 
         protected int getNextState(int curState, char nextChar) {
-            Dictionary<char[], int>? matchingRules;
+            Dictionary<HashSet<char>, int>? matchingRules;
             int nextState = 0;
 
             if (!rules.TryGetValue(curState, out matchingRules)) return nextState;
